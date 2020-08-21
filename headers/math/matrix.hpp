@@ -50,7 +50,7 @@ namespace Sigabrt {
         ///   - Scalar multiplication
         ///   - Find next pivot element after a row. This is necessary in algorithms like Gauss Jordan, if the current pivot is 0.
         ///
-        /// Matrix also has index operations defined. You can do `matrix[i][j]` on both mutable and immutable objects/references
+        /// Matrix also has index operations defined. You can do `matrix[i][j]` on both const and non const objects/references
         ///
         template <typename T> class Matrix {
         private:
@@ -146,12 +146,47 @@ namespace Sigabrt {
                 return retval;
             }
             
-            std::size_t getRows() const {
+            ///
+            /// Returns the number of rows in the matrix
+            ///
+            const std::size_t& getRows() const {
                 return nrows;
             }
             
-            std::size_t getCols() const {
+            ///
+            /// Returns the number of columns in the matrix
+            ///
+            const std::size_t& getCols() const {
                 return ncols;
+            }
+            
+            ///
+            /// This function replaces row R1 -> aR1 + bR2
+            ///
+            void linearCombRows(
+                const std::size_t& r1,
+                const T& a,
+                const std::size_t& r2,
+                const T& b
+            ) {
+                if (r1 > nrows || r2 > nrows) {
+                    throw std::out_of_range("Row access out of range.");
+                } else {
+                    for (std::size_t i = 0; i < ncols; i++) {
+                        storage[r1*ncols + i] = a*storage[r1*ncols + i] + b*storage[r2*ncols + i]; 
+                    }
+                }
+            }
+            
+            ///
+            /// This function exchanges 2 rows in the matrix.
+            ///
+            void exchangeRows(const std::size_t& r1, const std::size_t& r2) {
+                if (r1 > nrows || r2 > nrows) {
+                    throw std::out_of_range("Row access out of range.");
+                } else {
+                    std::swap(rows[r1].start, rows[r2].start);
+                }
             }
         };
     }
