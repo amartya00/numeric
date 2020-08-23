@@ -9,37 +9,10 @@
 
 #include <models.hpp>
 
-using Sigabrt::Numeric::Models::Result;
+using Sigabrt::Numeric::Models::Slice;
 
 namespace Sigabrt {
     namespace Numeric {
-        template <typename T> struct Slice {
-            T* start;
-            std::size_t size;
-            
-            Slice(): start {nullptr}, size {0} {}
-            
-            Slice(const Slice<T>&)=delete;
-            Slice(Slice<T>&&)=delete;
-            void operator=(const Slice<T>&)=delete;
-            void operator=(Slice<T>&&)=delete;
-            
-            T& operator[](const std::size_t& idx) {
-                if (idx >= size) {
-                    throw std::out_of_range("Array index out of range");
-                }
-                return start[idx];
-            }
-            
-            const T& operator[](const std::size_t& idx) const {
-                if (idx >= size) {
-                    throw std::out_of_range("Array index out of range");
-                }
-                return start[idx];
-            }
-        };
-        
-        
         ///
         /// Matrix stricture. This represents a 2D matrix of elements of type `T` with some constrains. This structure has the copy
         /// constructor and assignment operators deleted to prevent extremely expensive operations.
@@ -173,7 +146,7 @@ namespace Sigabrt {
                     throw std::out_of_range("Row access out of range.");
                 } else {
                     for (std::size_t i = 0; i < ncols; i++) {
-                        storage[r1*ncols + i] = a*storage[r1*ncols + i] + b*storage[r2*ncols + i]; 
+                        rows[r1][i] = a*rows[r1][i] + b*rows[r2][i];
                     }
                 }
             }
@@ -186,6 +159,15 @@ namespace Sigabrt {
                     throw std::out_of_range("Row access out of range.");
                 } else {
                     std::swap(rows[r1].start, rows[r2].start);
+                }
+            }
+
+            ///
+            /// This function scales a row by `factor`
+            ///
+            void scale(const std::size_t& row, const T& factor) {
+                for (auto& elem : rows[row]) {
+                    elem *= factor;
                 }
             }
         };

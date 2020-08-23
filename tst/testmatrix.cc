@@ -84,5 +84,20 @@ SCENARIO("Matrix row operations happy case.") {
                 REQUIRE(isEqual(destMatrix, expectedMatrix));
             }
         }
+
+        WHEN("I scale a matrix row.") {
+
+            destMatrix.scale(0, 5);
+            const std::vector<std::vector<int>> expectedMatrix {
+                { 5, 10, 15},
+                { 4, 5, 6},
+                { 7, 8, 9}
+            };
+
+            THEN("The resulting matrix sgould be as expected.") {
+                
+                REQUIRE(isEqual(destMatrix, expectedMatrix));
+            }
+        }
     }
 }

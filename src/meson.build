@@ -1,28 +1,4 @@
 exe = executable('server',
     'main.cc',
-    include_directories : inc,
-    link_args: [
-        '-lpthread',
-        '-lfolly',
-        '-liberty',
-        '-lwangle',
-        '-lglog',
-        '-ldouble-conversion',
-        '-ldl',
-        '-lgflags',
-        '-levent',
-        '-lboost_context',
-        '-lwangle',
-        '-lproxygen',
-        '-lproxygenhttpserver',
-        '-llzma',
-        '-lfizz',
-        '-lssl',
-        '-lcrypto',
-        '-lzstd',
-        '-lz',
-        '-lsnappy',
-        '-llz4',
-        '-lsodium'
-        ]
-    )
+    include_directories : inc
+)
