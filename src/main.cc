@@ -4,6 +4,7 @@
 #include <vector>
 
 #include <math/matrix.hpp>
+#include <math/rref.hpp>
 
 
 using Sigabrt::Numeric::Matrix;

@@ -27,10 +27,10 @@ namespace Sigabrt {
         ///
         template <typename T> class Matrix {
         private:
-            std::unique_ptr<Slice<T>[]> rows;
-            std::unique_ptr<T[]> storage;
             std::size_t nrows;
             std::size_t ncols;
+            std::unique_ptr<Slice<T>[]> rows;
+            std::unique_ptr<T[]> storage;
             
             void initializeSlices() {
                 for (std::size_t i = 0; i < nrows; i++) {
@@ -38,7 +38,7 @@ namespace Sigabrt {
                     rows[i].size = ncols;
                 }
             }
-            
+
         public:
             ///
             /// Constructor.
@@ -62,7 +62,7 @@ namespace Sigabrt {
                     }
                     initializeSlices();
                 }
-            
+
             ///
             /// Constructor. This moves the input vector's ownership to itself.
             /// Arguments:
@@ -82,6 +82,9 @@ namespace Sigabrt {
                     storage = std::make_unique<T[]>(nrows * ncols);
                     
                     for (std::size_t i = 0; i < nrows; i++) {
+                        if (vecs[i].size() != ncols) {
+                            throw std::invalid_argument("All rows of source matrix have to be of same length.");
+                        }
                         for (std::size_t j = 0; j < ncols; j++) {
                             storage[i*ncols + j] = vecs[i][j];
                         }
@@ -89,21 +92,43 @@ namespace Sigabrt {
                     initializeSlices();
                 }
             }
-            
+
             Matrix(const Matrix<T>& other)=delete;
             void operator=(const Matrix<T> other)=delete;
-            
+
             Matrix(Matrix<T>&& other): nrows {other.nrows}, ncols {other.ncols}, rows {std::move(other.rows)}, storage {std::move(other.storage)} {}
-            
-            
+
             Slice<T>& operator[](const std::size_t& row) {
+                if (row >= nrows) {
+                    throw std::out_of_range("Array index out of range");
+                }
+                
                 return rows[row];
             }
-            
+
             const Slice<T>& operator[](const std::size_t& row) const {
+                if (row >= nrows) {
+                    throw std::out_of_range("Array index out of range");
+                }
                 return rows[row];
             }
-            
+
+            const Slice<T>* begin() const {
+                return &rows[0];
+            }
+
+            const Slice<T>* end() const {
+                return &rows[nrows];
+            }
+
+            Slice<T>* begin() {
+                return &rows[0];
+            }
+
+            Slice<T>* end() {
+                return &rows[nrows];
+            }
+
             ///
             /// Identity matrix generator. This returns an `nxn` identity matrix.
             /// Arguments:
@@ -166,6 +191,9 @@ namespace Sigabrt {
             /// This function scales a row by `factor`
             ///
             void scale(const std::size_t& row, const T& factor) {
+                if (row > nrows) {
+                    throw std::out_of_range("Row access out of range.");
+                }
                 for (auto& elem : rows[row]) {
                     elem *= factor;
                 }

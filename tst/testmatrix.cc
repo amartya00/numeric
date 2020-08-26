@@ -1,5 +1,6 @@
 #define CATCH_CONFIG_MAIN
 
+#include <exception>
 #include <vector>
 #include <iostream>
 
@@ -26,9 +27,9 @@ template <typename T> bool isEqual(const Matrix<T>& matrix, const std::vector<st
     
 }
 
-SCENARIO("Matrix construction happy case.") {
+SCENARIO("Matrix construction.") {
     
-    GIVEN("I construct a 3 x 3 matrix from nrows and ncols.") {
+    GIVEN("I construct a 3x3 matrix from vectors.") {
         
         std::vector<std::vector<int>> srcMatrix {
             {1,2,3},
@@ -40,6 +41,103 @@ SCENARIO("Matrix construction happy case.") {
         THEN("The source and destination matrix should be equal.") {
             
             REQUIRE(isEqual(destMatrix, srcMatrix));
+        }
+    }
+    
+    GIVEN("I construct a 3x3 matrix in row/col form.") {
+        Matrix<int> myMatrix {3,3};
+        
+        THEN("The constructed matrix should be a 3x3 zero matrix.") {
+            std::vector<std::vector<int>> expexted {
+                {0,0,0},
+                {0,0,0},
+                {0,0,0}
+            };
+            
+            REQUIRE(isEqual(myMatrix, expexted));
+        }
+    }
+    
+    GIVEN("I attempt to construct a matrix from an empty vector.") {
+        
+        THEN("I should recieve an invalid argument error.") {
+            REQUIRE_THROWS_AS(Matrix(std::vector<std::vector<double>>()), std::invalid_argument);
+        }
+    }
+    
+    GIVEN("I attempt to construct a matrix from a vector containg another emoty vector (empty column).") {
+        THEN("I should recieve an invalid argument error.") {
+            std::vector<std::vector<double>> srcVector {
+                {},
+                {}
+            };
+            REQUIRE_THROWS_AS(Matrix {srcVector}, std::invalid_argument);
+        }
+    }
+    
+    GIVEN("I attempt to construct a matrix from a vector containg rows of unequal sizes.") {
+        THEN("I should recieve an invalid argument error.") {
+            std::vector<std::vector<double>> srcVector {
+                {1.2, 2.2},
+                {3.2, 1.1, 7.0}
+            };
+            REQUIRE_THROWS_AS(Matrix {srcVector}, std::invalid_argument);
+        }
+    }
+}
+
+SCENARIO("Matrix access and iterators.") {
+    
+    GIVEN("I have a 3x3 matrix.") {
+        std::vector<std::vector<int>> srcMatrix {
+            {1,2,3},
+            {4,5,6},
+            {7,8,9}
+        };
+        Matrix<int> destMatrix {srcMatrix};
+        
+        WHEN("I try to access some element in the matrix.") {
+            int elem = destMatrix[1][2];
+            
+            THEN("I should get back the correct element.") {
+                
+                REQUIRE(srcMatrix[1][2] == elem);
+            }
+        }
+        
+        WHEN("I iterate through the matrix.") {
+            
+            THEN("I should be able to do so.") {
+                std::size_t r {0};
+                std::size_t c {0};
+                
+                for (const auto& row : destMatrix) {
+                    for (const int& elem : row) {
+                        
+                        REQUIRE(srcMatrix[r][c] == elem);
+                        c++;
+                    }
+                    c = 0;
+                    r++;
+                }
+                
+            }
+        }
+        
+        WHEN("I try to access the wrong row.") {
+            
+            THEN("I should get a out of range error.") {
+                
+                REQUIRE_THROWS_AS(destMatrix[5][0], std::out_of_range);
+            }
+        }
+        
+        WHEN("I try to access the wrong col.") {
+            
+            THEN("I should get a out of range error.") {
+                
+                REQUIRE_THROWS_AS(destMatrix[5][0], std::out_of_range);
+            }
         }
     }
 }
@@ -97,6 +195,43 @@ SCENARIO("Matrix row operations happy case.") {
             THEN("The resulting matrix sgould be as expected.") {
                 
                 REQUIRE(isEqual(destMatrix, expectedMatrix));
+            }
+        }
+    }
+    
+    GIVEN("I have a simple matrix") {
+        const std::vector<std::vector<int>> srcMatrix {
+            {1,2,3},
+            {4,5,6},
+            {7,8,9}
+        };
+        Matrix<int> destMatrix {srcMatrix};
+        
+        WHEN("I do row linear combinations on the matrix.") {
+            
+            THEN("I should expect an exception.") {
+                
+                REQUIRE_THROWS_AS(destMatrix.linearCombRows(5, 1, 0, 2), std::out_of_range);
+                REQUIRE_THROWS_AS(destMatrix.linearCombRows(0, 1, 7, 2), std::out_of_range);
+                REQUIRE_THROWS_AS(destMatrix.linearCombRows(7, 1, 7, 2), std::out_of_range);
+            }
+        }
+        
+        WHEN("I exchange rows in the matrix with invalid rows.") {
+            
+            THEN("I should expect an exception.") {
+                
+                REQUIRE_THROWS_AS(destMatrix.exchangeRows(10, 0), std::out_of_range);
+                REQUIRE_THROWS_AS(destMatrix.exchangeRows(0, 10), std::out_of_range);
+                REQUIRE_THROWS_AS(destMatrix.exchangeRows(10, 10), std::out_of_range);
+            }
+        }
+        
+        WHEN("I scale an invalid row.") {
+            
+            THEN("I should expect an exception.") {
+                
+                REQUIRE_THROWS_AS(destMatrix.scale(10, 0), std::out_of_range);
             }
         }
     }
