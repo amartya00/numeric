@@ -32,9 +32,9 @@ SCENARIO("Matrix construction.") {
     GIVEN("I construct a 3x3 matrix from vectors.") {
         
         std::vector<std::vector<int>> srcMatrix {
-            {1,2,3},
-            {4,5,6},
-            {7,8,9}
+            {1,2,3,100},
+            {4,5,6,200},
+            {7,8,9,300}
         };
         Matrix<int> destMatrix {srcMatrix};
         

@@ -34,7 +34,7 @@ namespace Sigabrt {
             
             void initializeSlices() {
                 for (std::size_t i = 0; i < nrows; i++) {
-                    rows[i].start = storage.get()+i*nrows;
+                    rows[i].start = storage.get()+i*ncols;
                     rows[i].size = ncols;
                 }
             }
