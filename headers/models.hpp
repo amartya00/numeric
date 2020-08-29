@@ -59,6 +59,7 @@ namespace Sigabrt {
              * a start pointer of type `T`, and a size. It provides some convenience overloads:
              *   - Overloaded [] operator for indexing with range checking.
              *   - Overloaded `begin` and `end` methods to enable range for loop.
+             * 
              * NOTE: Move and move assignment has been disabled to avoid multiple ownership mess.
              * */
             template <typename T> struct Slice {

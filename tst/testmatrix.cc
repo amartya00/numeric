@@ -1,5 +1,6 @@
 #define CATCH_CONFIG_MAIN
 
+#include <algorithm>
 #include <exception>
 #include <vector>
 #include <iostream>
@@ -232,6 +233,267 @@ SCENARIO("Matrix row operations happy case.") {
             THEN("I should expect an exception.") {
                 
                 REQUIRE_THROWS_AS(destMatrix.scale(10, 0), std::out_of_range);
+            }
+        }
+    }
+}
+
+SCENARIO("Multi matrix operations.") {
+    
+    GIVEN("I have 2 matrices of same dims.") {
+        
+        Matrix<double> m1 {
+            {
+                {1,2,3,4},
+                {1,2,3,4},
+                {1,2,3,4}
+            }
+        };
+        Matrix<double> m2 {
+            {
+                {1,2,3,4},
+                {1,2,3,4},
+                {1,2,3,4}
+            }
+        };
+        
+        WHEN("I add them.") {
+            
+            Matrix<double> added = m1 + m2;
+            
+            THEN("The resultant matrix should be as expected.") {
+                
+                std::vector<std::vector<double>> expected {
+                    {2,4,6,8},
+                    {2,4,6,8},
+                    {2,4,6,8}
+                };
+                
+                REQUIRE(isEqual(added, expected));
+            }
+        }
+    }
+    
+    GIVEN("I have 2 matrices of different dims.") {
+        
+        Matrix<double> m1 {
+            {
+                {1,2,3,4},
+                {1,2,3,4},
+                {1,2,3,4}
+            }
+        };
+        Matrix<double> m2 {
+            {
+                {1,2,3,4,5},
+                {1,2,3,4,5},
+                {1,2,3,4,5}
+            }
+        };
+        
+        WHEN("I add them.") {
+            
+            THEN("The operation should throw an error.") {
+                
+                REQUIRE_THROWS_AS(m1 + m2, std::invalid_argument);
+            }
+        }
+    }
+    
+    GIVEN("I have 2 compatible matrices.") {
+        
+        Matrix<double> m1 {
+            {
+                {1,2,3},
+                {4,5,6}
+            }
+        };
+        Matrix<double> m2 {
+            {
+                {7,8},
+                {9,10},
+                {11,12}
+            }
+        };
+        
+        WHEN("I multiply them.") {
+            
+            Matrix<double> product = m1 * m2;
+            
+            THEN("The resultant matrix should be as expected.") {
+                std::vector<std::vector<double>> expected {
+                    {
+                        {58, 64},
+                        {139, 154}
+                    }
+                };
+                REQUIRE(isEqual(product, expected));
+            }
+        }
+    }
+    
+    GIVEN("I have 2 incompatible matrices.") {
+        
+        Matrix<double> m1 {
+            {
+                {1,2,3},
+                {4,5,6}
+            }
+        };
+        Matrix<double> m2 {
+            {
+                {7,8},
+                {9,10},
+                {11,12},
+                {13,14}
+            }
+        };
+        
+        WHEN("I multiply them.") {
+            
+            THEN("The operation should throw an exception.") {
+                
+                REQUIRE_THROWS_AS(m1 * m2, std::invalid_argument);
+            }
+        }
+    }
+    
+    GIVEN("I have a matrix and a compatible vector.") {
+        Matrix<double> m1 {
+            {
+                {1,1,1,1},
+                {1,1,1,1},
+                {1,1,1,1}
+            }
+        };
+        std::vector<double> v1 {1,1,1,1};
+        
+        WHEN("I multiply the 2") {
+            
+            std::vector<double> result {m1 * v1};
+            
+            THEN("The result shoule be expected.") {
+                
+                std::vector<double> expected {4,4,4};
+                
+                REQUIRE(3 == result.size());
+                REQUIRE(std::equal(expected.begin(), expected.end(), result.begin()));
+            }
+        }
+    }
+    
+    GIVEN("I have a matrix and a incompatible vector.") {
+        Matrix<double> m1 {
+            {
+                {1,1,1,1},
+                {1,1,1,1},
+                {1,1,1,1}
+            }
+        };
+        std::vector<double> v1 {1,1,1,1,1};
+        
+        WHEN("I multiply the 2") {
+            
+            THEN("The operation should throw an exception.") {
+                
+                REQUIRE_THROWS_AS(m1 * v1, std::invalid_argument);
+            }
+        }
+    }
+    
+    GIVEN("I have a vector and a compatible matrix.") {
+        Matrix<double> m1 {
+            {
+                {1,1,1,1},
+                {1,1,1,1},
+                {1,1,1,1}
+            }
+        };
+        std::vector<double> v1 {1,1,1,1};
+        
+        WHEN("I multiply the 2") {
+            
+            std::vector<double> result {v1 * m1};
+            
+            THEN("The result shoule be expected.") {
+                
+                std::vector<double> expected {4,4,4};
+                
+                REQUIRE(3 == result.size());
+                REQUIRE(std::equal(expected.begin(), expected.end(), result.begin()));
+            }
+        }
+    }
+    
+    GIVEN("I have a vector and a incompatible matrix.") {
+        Matrix<double> m1 {
+            {
+                {1,1,1,1},
+                {1,1,1,1},
+                {1,1,1,1}
+            }
+        };
+        std::vector<double> v1 {1,1,1,1,1};
+        
+        WHEN("I multiply the 2") {
+            
+            THEN("The operation should throw an exception.") {
+                
+                REQUIRE_THROWS_AS(v1 * m1, std::invalid_argument);
+            }
+        }
+    }
+    
+    GIVEN("I have 2 compatible vectors.") {
+        std::vector<double> v0 {1,1,1,1};
+        std::vector<double> v1 {1,1,1,1};
+        
+        WHEN("I multiply the 2") {
+            
+            double result {v0 * v1};
+            
+            THEN("The result shoule be expected.") {
+                
+            
+                REQUIRE(4.0 == result);
+            }
+        }
+    }
+    
+    GIVEN("I have 2 incompatible vectors.") {
+        std::vector<double> v0 {1,1,1,1,1,1,1,1,1,1};
+        std::vector<double> v1 {1,1,1,1,1};
+        
+        WHEN("I multiply the 2") {
+            
+            THEN("The operation should throw an exception.") {
+                
+                REQUIRE_THROWS_AS(v0 * v1, std::invalid_argument);
+            }
+        }
+    }
+}
+
+SCENARIO("Composite matrix operations.") {
+    
+    GIVEN("I have some matrices and vectors.") {
+        Matrix<double> M {
+            {
+                {1,1,1,1},
+                {1,1,1,1},
+                {1,1,1,1}
+            }  
+        };
+        Matrix<double> I {Matrix<double>::identity(4)};
+        std::vector<double> v1 {1,1,1,1};
+        std::vector<double> v2 {1,1,1};
+        
+        WHEN("I do a chain multiplication of these.") {
+            double result {M * I * v1 * v2};
+            
+            THEN("The result should be as expected") {
+                
+                REQUIRE(12 == result);
             }
         }
     }
