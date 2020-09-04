@@ -1,17 +1,21 @@
 #ifndef __SIGABRT_NUMERIC_MODELS__
 #define __SIGABRT_NUMERIC_MODELS__
 
-#include <chrono>
+#include <iterator>
 #include <optional>
 #include <string>
+#include <type_traits>
+#include <vector>
 
 namespace Sigabrt {
     namespace Numeric {
-        /**
+        /** \namespace
          * This namespace contains various utility types that will be used throughout the rest of the library.
          **/
         namespace Models {
             /**
+             * \enum Operation type
+             * 
              * The `OperationType` enum is the type used by the `Result` struct to indicate what type of result is it 
              * returning. Possible values are `ERR` and `OK`.
              * */
@@ -20,6 +24,8 @@ namespace Sigabrt {
             };
             
             /**
+             * \enum ErrorCode
+             * 
              * The ErrorCode enum will be used by this library as the error type for the `Result<T, E>` structure.
              * This will contain error codes specific to this library.
              * */
@@ -30,6 +36,7 @@ namespace Sigabrt {
             };
             
             /**
+             * \class Result
              * 
              * The `Result<T, E>` type is used to return the results of operations in the library. The usage of a
              * `Result` type to return computations is borrowed from Rust, and is also a neat way to avoid the 
@@ -56,6 +63,8 @@ namespace Sigabrt {
             };
 
             /**
+             * \class Slice
+             * 
              * The `Slice<T>` type is meant to provide functionality similar to Rust's `fat pointer` types. It has 2 fields,
              * a start pointer of type `T`, and a size. It provides some convenience overloads:
              *   - Overloaded [] operator for indexing with range checking.
@@ -106,10 +115,76 @@ namespace Sigabrt {
             };
             
             /**
+             * \enum Unit
+             * 
              * This enum is meant to emulate Rust's `Unit` type, so that we can return void types with `Result`. Example
              * `Result<Unit, ErrorCode>`
              * */
             enum class Unit{unit};
+
+            /**
+             * \class RunInfo 
+             * 
+             * This class will be used for benchmarking algorithms. Each instance of the struct contain information about 1 iteration
+             * of the benchmark, as it iterates over input sizes.
+             * 
+             * \var inputSize: This represents the input size for that particular iteration.
+             * 
+             * \var iterations: This field represents the number of iterations  to average over for that input size. 
+             * Ideally you would want to have lesser iterations for large inputs.
+             * 
+             * \var runTime: This field is an output field, representing the execution time for that iteration.
+             * 
+             * */
+            struct RunInfo {
+                unsigned long inputSize {0};
+                unsigned long iterations {0};
+                double runTimeInMillis {-1.0};
+            };
+            
+            bool operator==(const RunInfo& lhs, const RunInfo& rhs) {
+                return lhs.inputSize == rhs.inputSize &&
+                    lhs.iterations == rhs.iterations &&
+                    lhs.runTimeInMillis == rhs.runTimeInMillis;
+            }
+
+            /**
+             * \class IsForwardIteratorOfType
+             * 
+             * \tparam It The iterator type. Typically you would do domething like decltype(v1.begin()).
+             * 
+             * \tparam T The value type that you want the iterator to have.
+             * 
+             * Are you creating a template for which one of the parameters has to be a forward iterator of type `T`?
+             * This struct helps you with that. `IsForwardIterator<decltype(v1.begin()), int>` will evaluate to true 
+             * if `v1` is a vector of integers.
+             * 
+             * ```
+             * std::vector<int> v1 {1,2,3};
+             * std::cout << std::boolalpha << Sigabrt::Numeric::Models::IsForwardIterator<decltype(v1.begin()), int>::value << "\n";
+             * ```
+             * */
+            template <typename It,typename T, typename=void> struct IsForwardIteratorOfType {
+                static constexpr bool value {false};
+            };
+            template <typename It, typename T>
+            struct IsForwardIteratorOfType<
+                It, 
+                T,
+                typename std::enable_if<
+                    (
+                        (
+                            std::is_same<typename std::iterator_traits<It>::iterator_category, std::forward_iterator_tag>::value ||
+                            std::is_same<typename std::iterator_traits<It>::iterator_category, std::random_access_iterator_tag>::value ||
+                            std::is_same<typename std::iterator_traits<It>::iterator_category, std::bidirectional_iterator_tag>::value
+                        ) &&
+                        std::is_same<typename std::iterator_traits<It>::value_type, T>::value
+                    )
+                >::type
+            >  {
+                static constexpr bool value {true};
+            };
+            
         }
     }
 }

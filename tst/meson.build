@@ -6,8 +6,12 @@ vectortest = executable('vectortest', 'testvector.cc',
 
 rreftest = executable('rreftest', 'testrref.cc',
                     include_directories : inc)
+                    
+benchmarktest = executable('benchmarktest', 'testbenchmark.cc',
+                    include_directories : inc)
 
 test('Matrix test', matrixtest)
 test('Vector test', vectortest)
 test('RREF test', rreftest)
+test('Benchmark test', benchmarktest)
 
