@@ -7,8 +7,10 @@
 
 #include <catch2/catch.hpp>
 #include <math/matrix.hpp>
+#include <math/vector.hpp>
 
 using Sigabrt::Numeric::Matrix;
+using Sigabrt::Numeric::Vector;
 
 template <typename T> bool isEqual(const Matrix<T>& matrix, const std::vector<std::vector<T>>& vecs) {
     if (matrix.getRows() != vecs.size()) {
@@ -141,6 +143,59 @@ SCENARIO("Matrix access and iterators.") {
             }
         }
     }
+    
+    GIVEN("I have a 3x3 const matrix.") {
+        const std::vector<std::vector<int>> srcMatrix {
+            {1,2,3},
+            {4,5,6},
+            {7,8,9}
+        };
+        Matrix<int> destMatrix {srcMatrix};
+        
+        WHEN("I try to access some element in the matrix.") {
+            int elem = destMatrix[1][2];
+            
+            THEN("I should get back the correct element.") {
+                
+                REQUIRE(srcMatrix[1][2] == elem);
+            }
+        }
+        
+        WHEN("I iterate through the matrix.") {
+            
+            THEN("I should be able to do so.") {
+                std::size_t r {0};
+                std::size_t c {0};
+                
+                for (const auto& row : destMatrix) {
+                    for (const int& elem : row) {
+                        
+                        REQUIRE(srcMatrix[r][c] == elem);
+                        c++;
+                    }
+                    c = 0;
+                    r++;
+                }
+                
+            }
+        }
+        
+        WHEN("I try to access the wrong row.") {
+            
+            THEN("I should get a out of range error.") {
+                
+                REQUIRE_THROWS_AS(destMatrix[5][0], std::out_of_range);
+            }
+        }
+        
+        WHEN("I try to access the wrong col.") {
+            
+            THEN("I should get a out of range error.") {
+                
+                REQUIRE_THROWS_AS(destMatrix[5][0], std::out_of_range);
+            }
+        }
+    }
 }
 
 SCENARIO("Matrix row operations happy case.") {
@@ -186,7 +241,7 @@ SCENARIO("Matrix row operations happy case.") {
 
         WHEN("I scale a matrix row.") {
 
-            destMatrix.scale(0, 5);
+            destMatrix.scaleRow(0, 5);
             const std::vector<std::vector<int>> expectedMatrix {
                 { 5, 10, 15},
                 { 4, 5, 6},
@@ -196,6 +251,36 @@ SCENARIO("Matrix row operations happy case.") {
             THEN("The resulting matrix sgould be as expected.") {
                 
                 REQUIRE(isEqual(destMatrix, expectedMatrix));
+            }
+        }
+        
+        WHEN("I scale the whole matrix.") {
+
+            destMatrix.scale(5);
+            const std::vector<std::vector<int>> expectedMatrix {
+                {  5, 10, 15},
+                { 20, 25, 30},
+                { 35, 40, 45}
+            };
+
+            THEN("The resulting matrix sgould be as expected.") {
+                
+                REQUIRE(isEqual(destMatrix, expectedMatrix));
+            }
+        }
+        
+        WHEN("I do composite row operations") {
+            
+            destMatrix.linearCombRows(0, 1, 1, 2).scaleRow(0, 3).exchangeRows(0, 1);
+            const std::vector<std::vector<int>> expected {
+                { 4, 5, 6},
+                {27,36,45},
+                { 7, 8, 9}
+            };
+            
+            THEN("The resulting matrix should be as expected.") {
+                
+                REQUIRE(isEqual(destMatrix, expected));
             }
         }
     }
@@ -232,7 +317,7 @@ SCENARIO("Matrix row operations happy case.") {
             
             THEN("I should expect an exception.") {
                 
-                REQUIRE_THROWS_AS(destMatrix.scale(10, 0), std::out_of_range);
+                REQUIRE_THROWS_AS(destMatrix.scaleRow(10, 0), std::out_of_range);
             }
         }
     }
@@ -272,6 +357,22 @@ SCENARIO("Multi matrix operations.") {
                 REQUIRE(isEqual(added, expected));
             }
         }
+        
+        WHEN("I subtract them.") {
+            
+            Matrix<double> res = m1 - m2;
+            
+            THEN("The resultant matrix should be as expected.") {
+                
+                std::vector<std::vector<double>> expected {
+                    {0,0,0,0},
+                    {0,0,0,0},
+                    {0,0,0,0}
+                };
+                
+                REQUIRE(isEqual(res, expected));
+            }
+        }
     }
     
     GIVEN("I have 2 matrices of different dims.") {
@@ -296,6 +397,14 @@ SCENARIO("Multi matrix operations.") {
             THEN("The operation should throw an error.") {
                 
                 REQUIRE_THROWS_AS(m1 + m2, std::invalid_argument);
+            }
+        }
+        
+        WHEN("I subtract them.") {
+            
+            THEN("The operation should throw an error.") {
+                
+                REQUIRE_THROWS_AS(m1 - m2, std::invalid_argument);
             }
         }
     }
@@ -366,11 +475,11 @@ SCENARIO("Multi matrix operations.") {
                 {1,1,1,1}
             }
         };
-        std::vector<double> v1 {1,1,1,1};
+        Vector<double> v1 {{1,1,1,1}};
         
         WHEN("I multiply the 2") {
             
-            std::vector<double> result {m1 * v1};
+            Vector<double> result {m1 * v1};
             
             THEN("The result shoule be expected.") {
                 
@@ -390,7 +499,7 @@ SCENARIO("Multi matrix operations.") {
                 {1,1,1,1}
             }
         };
-        std::vector<double> v1 {1,1,1,1,1};
+        Vector<double> v1 {{1,1,1,1,1}};
         
         WHEN("I multiply the 2") {
             
@@ -409,11 +518,11 @@ SCENARIO("Multi matrix operations.") {
                 {1,1,1,1}
             }
         };
-        std::vector<double> v1 {1,1,1,1};
+        Vector<double> v1 {{1,1,1,1}};
         
         WHEN("I multiply the 2") {
             
-            std::vector<double> result {v1 * m1};
+            Vector<double> result {v1 * m1};
             
             THEN("The result shoule be expected.") {
                 
@@ -433,7 +542,7 @@ SCENARIO("Multi matrix operations.") {
                 {1,1,1,1}
             }
         };
-        std::vector<double> v1 {1,1,1,1,1};
+        Vector<double> v1 {{1,1,1,1,1}};
         
         WHEN("I multiply the 2") {
             
@@ -445,8 +554,8 @@ SCENARIO("Multi matrix operations.") {
     }
     
     GIVEN("I have 2 compatible vectors.") {
-        std::vector<double> v0 {1,1,1,1};
-        std::vector<double> v1 {1,1,1,1};
+        Vector<double> v0 {{1,1,1,1}};
+        Vector<double> v1 {{1,1,1,1}};
         
         WHEN("I multiply the 2") {
             
@@ -461,8 +570,8 @@ SCENARIO("Multi matrix operations.") {
     }
     
     GIVEN("I have 2 incompatible vectors.") {
-        std::vector<double> v0 {1,1,1,1,1,1,1,1,1,1};
-        std::vector<double> v1 {1,1,1,1,1};
+        Vector<double> v0 {{1,1,1,1,1,1,1,1,1,1}};
+        Vector<double> v1 {{1,1,1,1,1}};
         
         WHEN("I multiply the 2") {
             
@@ -485,8 +594,8 @@ SCENARIO("Composite matrix operations.") {
             }  
         };
         Matrix<double> I {Matrix<double>::identity(4)};
-        std::vector<double> v1 {1,1,1,1};
-        std::vector<double> v2 {1,1,1};
+        Vector<double> v1 {{1,1,1,1}};
+        Vector<double> v2 {{1,1,1}};
         
         WHEN("I do a chain multiplication of these.") {
             double result {M * I * v1 * v2};

@@ -5,6 +5,8 @@
 #include <vector>
 #include <models.hpp>
 
+#include <math/matrix.hpp>
+
 using Sigabrt::Numeric::Models::Result;
 using Sigabrt::Numeric::Models::OperationType;
 using Sigabrt::Numeric::Models::ErrorCode;
@@ -70,7 +72,7 @@ namespace Sigabrt {
                 }
                 
                 // Normalize pivot element
-                matrix.scale(i, static_cast<T>(1)/matrix[i][i]);
+                matrix.scaleRow(i, static_cast<T>(1)/matrix[i][i]);
                 
                 // Operate on subsequent rows.
                 // TODO: Parallelize this

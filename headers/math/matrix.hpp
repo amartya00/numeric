@@ -5,11 +5,12 @@
 #include <cstddef>
 #include <exception>
 #include <memory>
-#include <vector>
 
+#include <math/vector.hpp>
 #include <models.hpp>
 
 using Sigabrt::Numeric::Models::Slice;
+using Sigabrt::Numeric::Vector;
 
 namespace Sigabrt {
     namespace Numeric {
@@ -27,18 +28,23 @@ namespace Sigabrt {
          *   - Exchange
          *   - Scalar multiplication
          *   - Find next pivot element after a row. This is necessary in algorithms like Gauss Jordan, if the current pivot is 0.
+         * 
+         * Besides it also supports scalar multiplication on the whole matrix.
+         * 
          * NOTE: All row operations throw `out_of_range` error on invalid rows.
          * 
-         * This also has the addition and multiplication operators overriden. Multiply operator can also multiply the matrix with a vector.
+         * This also has the addition and multiplication operators overriden. Multiply operator can also multiply the matrix with a vector
+         * (`Sigabrt::Numeric::Vector`), not `std::vector`.
+         * 
          * NOTE: When we matrix*vector, we assume it's a column vector and the result is a column vector as well, but when doing vector
          * *matrix, we assume the vector and the result are row vectors.
          *
          * Matrix also has index operations and range for defined. You can do `matrix[i][j]` on both const and non const objects/references,
-         * and also use this in range for loops like `for (auto row : matrix)`. For your convenience, this library also defines * operator for 2
-         * vectors, the same way as it does for matrices.
+         * and also use this in range for loops like `for (auto row : matrix)`.
          * 
          * */
         template <typename T> class Matrix {
+            static_assert(std::is_default_constructible<T>::value, "Type T has to be default constructible.");
         private:
             std::size_t nrows;
             std::size_t ncols;
@@ -200,10 +206,18 @@ namespace Sigabrt {
                 return nrows;
             }
             
+            const std::size_t& getRows() {
+                return nrows;
+            }
+            
             /**
              * \brief Get the number of columns in the matrix.
              * */
             const std::size_t& getCols() const {
+                return ncols;
+            }
+            
+            const std::size_t& getCols() {
                 return ncols;
             }
             
@@ -219,8 +233,10 @@ namespace Sigabrt {
              * \param b: The factir to scale R2 by in the linear combination.
              * 
              * \throw e: std::out_of_range if either r1 or r2 exeeds the length of the matrix.
+             * 
+             * \return Mutable reference to this matrix.
              * */
-            void linearCombRows(
+            Matrix<T>& linearCombRows(
                 const std::size_t& r1,
                 const T& a,
                 const std::size_t& r2,
@@ -232,6 +248,7 @@ namespace Sigabrt {
                     for (std::size_t i = 0; i < ncols; i++) {
                         rows[r1][i] = a*rows[r1][i] + b*rows[r2][i];
                     }
+                    return *this;
                 }
             }
             
@@ -244,12 +261,15 @@ namespace Sigabrt {
              * \param r2: Other row to exchange.
              * 
              * \throw e: std::out_of_range if either r1 or r2 exeeds the length of the matrix.
+             * 
+             * \return Mutable reference to this matrix.
              * */
-            void exchangeRows(const std::size_t& r1, const std::size_t& r2) {
+            Matrix<T>& exchangeRows(const std::size_t& r1, const std::size_t& r2) {
                 if (r1 > nrows || r2 > nrows) {
                     throw std::out_of_range("Row access out of range.");
                 } else {
                     std::swap(rows[r1].start, rows[r2].start);
+                    return *this;
                 }
             }
 
@@ -262,14 +282,35 @@ namespace Sigabrt {
              * \param factor: The factor to scale the row by.
              * 
              * \throw e: std::out_of_range if either r1 or r2 exeeds the length of the matrix.
+             * 
+             * \return Mutable reference to this matrix.
              * */
-            void scale(const std::size_t& row, const T& factor) {
+            Matrix<T>& scaleRow(const std::size_t& row, const T& factor) {
                 if (row > nrows) {
                     throw std::out_of_range("Row access out of range.");
                 }
                 for (auto& elem : rows[row]) {
                     elem *= factor;
                 }
+                return *this;
+            }
+            
+            /**
+             * \brief Scale the whole matrix by a scalar.
+             * 
+             * This function multiplies each element of a matrix by a scalar. This is not implemented via an operator
+             * as producing a new matrix on each scaling operation is not a common operation and wasteful.
+             * 
+             * \param scalar: The scalar value.
+             * 
+             * \return Mutable reference to this matrix.
+             * 
+             * */
+            Matrix<T>& scale(const T& scalar) {
+                for (std::size_t i = 0; i < nrows; i++) {
+                    this -> scaleRow(i, scalar);
+                }
+                return *this;
             }
         };
         
@@ -282,6 +323,20 @@ namespace Sigabrt {
             for (std::size_t i = 0; i < lhs.getRows(); i++) {
                 for (std::size_t j = 0; j < lhs.getCols(); j++) {
                     retval[i][j] = lhs[i][j] + rhs[i][j];
+                }
+            }
+            return retval;
+        }
+        
+        // Override subtract operator operator
+        template <typename T> Matrix<T> operator-(const Matrix<T>& lhs, const Matrix<T>& rhs) {
+            if (lhs.getRows() != rhs.getRows() || lhs.getCols() != rhs.getCols()) {
+                throw std::invalid_argument("Matrices of different dimensions cannot be added");
+            }
+            Matrix<T> retval {lhs.getRows(), lhs.getCols()};
+            for (std::size_t i = 0; i < lhs.getRows(); i++) {
+                for (std::size_t j = 0; j < lhs.getCols(); j++) {
+                    retval[i][j] = lhs[i][j] - rhs[i][j];
                 }
             }
             return retval;
@@ -309,42 +364,31 @@ namespace Sigabrt {
         }
         
         // Override multiply operator  lhs = matrix and rhs = vector.
-        template <typename T> std::vector<T> operator*(const Matrix<T>& lhs, const std::vector<T>& rhs) {
+        template <typename T> Vector<T> operator*(const Matrix<T>& lhs, const Vector<T>& rhs) {
             if (lhs.getCols() != rhs.size()) {
                 throw std::invalid_argument("Incompatible matrix and vector for multiplication.");
             }
             
-            std::vector<T> retval;
-            retval.reserve(lhs.getRows());
+            Vector<T> retval(lhs.getRows());
+            
             
             for (std::size_t i = 0; i < lhs.getRows(); i++) {
                 T sum = static_cast<T>(0);
                 for (std::size_t k = 0; k < lhs.getCols(); k++) {
                     sum += lhs[i][k] * rhs[k];
                 }
-                retval.push_back(sum);
+                retval[i] = sum;
             }
             
             return retval;
         }
         
         // Override multiply operator lhs = vector and rhs = matrix.
-        template <typename T> std::vector<T> operator*(const std::vector<T>& lhs, const Matrix<T>& rhs) {
+        template <typename T> Vector<T> operator*(const Vector<T>& lhs, const Matrix<T>& rhs) {
             return rhs*lhs;
         }
         
     }
-}
-
-template <typename T> T operator*(const std::vector<T>& v1, const std::vector<T>& v2) {
-    if (v1.size() != v2.size()) {
-        throw std::invalid_argument("Incompatible vectors for multiplication.");
-    }
-    T acc {static_cast<T>(0)};
-    for (auto iter1 = v1.begin(), iter2 = v2.begin(); iter1 < v1.end(); iter1++, iter2++) {
-        acc+= ((*iter1) * (*iter2));
-    }
-    return acc;
 }
 
 #endif
