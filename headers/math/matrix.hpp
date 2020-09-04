@@ -9,9 +9,6 @@
 #include <math/vector.hpp>
 #include <models.hpp>
 
-using Sigabrt::Numeric::Models::Slice;
-using Sigabrt::Numeric::Vector;
-
 namespace Sigabrt {
     namespace Numeric {
         /**
@@ -48,7 +45,7 @@ namespace Sigabrt {
         private:
             std::size_t nrows;
             std::size_t ncols;
-            std::unique_ptr<Slice<T>[]> rows;
+            std::unique_ptr<Sigabrt::Numeric::Models::Slice<T>[]> rows;
             std::unique_ptr<T[]> storage;
             
             void initializeSlices() {
@@ -73,7 +70,7 @@ namespace Sigabrt {
                 const std::size_t& ncols
             ): nrows {nrows}, 
                 ncols {ncols}, 
-                rows {std::make_unique<Slice<T>[]>(nrows)},
+                rows {std::make_unique<Sigabrt::Numeric::Models::Slice<T>[]>(nrows)},
                 storage {std::make_unique<T[]>(nrows * ncols)} {
                     initializeSlices();
                 }
@@ -93,7 +90,7 @@ namespace Sigabrt {
                 } else {
                     nrows = vecs.size();
                     ncols = vecs[0].size();
-                    rows = std::make_unique<Slice<T>[]>(nrows);
+                    rows = std::make_unique<Sigabrt::Numeric::Models::Slice<T>[]>(nrows);
                     storage = std::make_unique<T[]>(nrows * ncols);
                     
                     for (std::size_t i = 0; i < nrows; i++) {
@@ -126,7 +123,7 @@ namespace Sigabrt {
                 other.storage = nullptr;
             }
 
-            Slice<T>& operator[](const std::size_t& row) {
+            Sigabrt::Numeric::Models::Slice<T>& operator[](const std::size_t& row) {
                 if (row >= nrows) {
                     throw std::out_of_range("Array index out of range");
                 }
@@ -134,26 +131,26 @@ namespace Sigabrt {
                 return rows[row];
             }
 
-            const Slice<T>& operator[](const std::size_t& row) const {
+            const Sigabrt::Numeric::Models::Slice<T>& operator[](const std::size_t& row) const {
                 if (row >= nrows) {
                     throw std::out_of_range("Array index out of range");
                 }
                 return rows[row];
             }
 
-            const Slice<T>* begin() const {
+            const Sigabrt::Numeric::Models::Slice<T>* begin() const {
                 return &rows[0];
             }
 
-            const Slice<T>* end() const {
+            const Sigabrt::Numeric::Models::Slice<T>* end() const {
                 return &rows[nrows];
             }
 
-            Slice<T>* begin() {
+            Sigabrt::Numeric::Models::Slice<T>* begin() {
                 return &rows[0];
             }
 
-            Slice<T>* end() {
+            Sigabrt::Numeric::Models::Slice<T>* end() {
                 return &rows[nrows];
             }
 
@@ -364,7 +361,7 @@ namespace Sigabrt {
         }
         
         // Override multiply operator  lhs = matrix and rhs = vector.
-        template <typename T> Vector<T> operator*(const Matrix<T>& lhs, const Vector<T>& rhs) {
+        template <typename T> Sigabrt::Numeric::Vector<T> operator*(const Matrix<T>& lhs, const Sigabrt::Numeric::Vector<T>& rhs) {
             if (lhs.getCols() != rhs.size()) {
                 throw std::invalid_argument("Incompatible matrix and vector for multiplication.");
             }
@@ -384,7 +381,7 @@ namespace Sigabrt {
         }
         
         // Override multiply operator lhs = vector and rhs = matrix.
-        template <typename T> Vector<T> operator*(const Vector<T>& lhs, const Matrix<T>& rhs) {
+        template <typename T> Sigabrt::Numeric::Vector<T> operator*(const Sigabrt::Numeric::Vector<T>& lhs, const Matrix<T>& rhs) {
             return rhs*lhs;
         }
         

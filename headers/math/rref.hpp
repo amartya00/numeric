@@ -7,24 +7,21 @@
 
 #include <math/matrix.hpp>
 
-using Sigabrt::Numeric::Models::Result;
-using Sigabrt::Numeric::Models::OperationType;
-using Sigabrt::Numeric::Models::ErrorCode;
-using Sigabrt::Numeric::Models::Unit;
-
 namespace Sigabrt {
     namespace Numeric {
-        template <typename T>
-        std::optional<std::size_t> findNextPivot(
-            const Matrix<T>& matrix, 
-            const std::size_t& startRow, 
-            const std::size_t& startCol) {
-            for (std::size_t i = startRow+1; i < matrix.getRows(); i++) {
-                if  (matrix[i][startCol] != 0) {
-                    return i;
+        namespace {
+            template <typename T>
+            std::optional<std::size_t> findNextPivot(
+                const Sigabrt::Numeric::Matrix<T>& matrix, 
+                const std::size_t& startRow, 
+                const std::size_t& startCol) {
+                for (std::size_t i = startRow+1; i < matrix.getRows(); i++) {
+                    if  (matrix[i][startCol] != 0) {
+                        return i;
+                    }
                 }
+                return std::nullopt;
             }
-            return std::nullopt;
         }
         
         /**
@@ -44,13 +41,14 @@ namespace Sigabrt {
          *   - `FREE_COLUMNS_RREF`: If free columns are detected during reduction. This indicates a lack of a unique solution.
          * 
          * */
-        template <typename T> Result<Unit, ErrorCode> gaussJordan(Matrix<T>& matrix) {
+        template <typename T> Sigabrt::Numeric::Models::Result<Sigabrt::Numeric::Models::Unit, Sigabrt::Numeric::Models::ErrorCode> 
+        gaussJordan(Sigabrt::Numeric::Matrix<T>& matrix) {
             // Step 0: Validate matrix in augmented form
             if (matrix.getRows() < matrix.getCols()-1) {
-                return Result<Unit, ErrorCode> {
-                    OperationType::ERR,
-                    Unit::unit,
-                    ErrorCode::UNDERDETERMINED_SYSTEM,
+                return Sigabrt::Numeric::Models::Result<Sigabrt::Numeric::Models::Unit, Sigabrt::Numeric::Models::ErrorCode> {
+                    Sigabrt::Numeric::Models::OperationType::ERR,
+                    Sigabrt::Numeric::Models::Unit::unit,
+                    Sigabrt::Numeric::Models::ErrorCode::UNDERDETERMINED_SYSTEM,
                     std::string("The number of equations in the augmented matrix is less than the number of variables.")
                 };
             }
@@ -60,10 +58,10 @@ namespace Sigabrt {
                 if (matrix[i][i] == static_cast<T>(0)) {
                     std::optional<T> nextPivot = findNextPivot(matrix, i, i);
                     if (nextPivot == std::nullopt) {
-                        return Result<Unit, ErrorCode> {
-                            OperationType::ERR,
-                            Unit::unit,
-                            ErrorCode::FREE_COLUMNS_RREF,
+                        return Sigabrt::Numeric::Models::Result<Sigabrt::Numeric::Models::Unit, Sigabrt::Numeric::Models::ErrorCode> {
+                            Sigabrt::Numeric::Models::OperationType::ERR,
+                            Sigabrt::Numeric::Models::Unit::unit,
+                            Sigabrt::Numeric::Models::ErrorCode::FREE_COLUMNS_RREF,
                             std::string("Free columns detected in RREF form. this system does not have a unique solution.")
                         };
                     } else {
@@ -86,9 +84,9 @@ namespace Sigabrt {
                 
             }
             
-            return Result<Unit, ErrorCode> {
-                OperationType::OK,
-                Unit::unit,
+            return Sigabrt::Numeric::Models::Result<Sigabrt::Numeric::Models::Unit, Sigabrt::Numeric::Models::ErrorCode> {
+                Sigabrt::Numeric::Models::OperationType::OK,
+                Sigabrt::Numeric::Models::Unit::unit,
                 std::nullopt,
                 std::nullopt
             };

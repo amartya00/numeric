@@ -1,6 +1,7 @@
 #ifndef __SIGABRT_NUMERIC_MODELS__
 #define __SIGABRT_NUMERIC_MODELS__
 
+#include <chrono>
 #include <optional>
 #include <string>
 
