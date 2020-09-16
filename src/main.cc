@@ -1,5 +1,6 @@
 #include <models.hpp>
 #include <math/rref.hpp>
+#include <types/fraction.hpp>
 #include <benchmark/benchmark.hpp>
 #include <iostream>
 #include <vector>
