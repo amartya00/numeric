@@ -7,10 +7,21 @@
 #include <type_traits>
 #include <vector>
 
+/**
+ * \namespace Sigabrt
+ * 
+ * \brief The root namespace.
+ * */
 namespace Sigabrt {
+    /**
+     * \namespace Sigabrt::Numeric
+     * 
+     * \brief Sub namespace with all numeric classes and functions.
+     * */
     namespace Numeric {
-        /** \namespace
-         * This namespace contains various utility types that will be used throughout the rest of the library.
+        /** \namespace Sigabrt::Numeric::Models
+         * 
+         * \brief This namespace contains various utility types that will be used throughout the rest of the library.
          **/
         namespace Models {
             /**

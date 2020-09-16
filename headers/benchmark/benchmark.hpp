@@ -8,8 +8,18 @@
 
 #include <models.hpp>
 
+/**
+ * \namespace Sigabrt
+ * 
+ * \brief The root namespace.
+ * */
 namespace Sigabrt {
-    namespace Numeric {
+    /**
+     * \namespace Sigabrt::Benchmark
+     * 
+     * \brief Sub namespace with all numeric classes and functions.
+     * */
+    namespace Benchmark {
         
         /**
          * \class Benchmark

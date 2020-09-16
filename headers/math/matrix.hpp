@@ -10,7 +10,17 @@
 #include <math/vector.hpp>
 #include <models.hpp>
 
+/**
+ * \namespace Sigabrt
+ * 
+ * \brief The root namespace.
+ * */
 namespace Sigabrt {
+    /**
+     * \namespace Sigabrt::Numeric
+     * 
+     * \brief Sub namespace with all numeric classes and functions.
+     * */
     namespace Numeric {
         /**
          * \class Matrix

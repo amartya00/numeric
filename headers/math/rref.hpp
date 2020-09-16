@@ -7,7 +7,17 @@
 #include <models.hpp>
 #include <math/matrix.hpp>
 
+/**
+ * \namespace Sigabrt
+ * 
+ * \brief The root namespace.
+ * */
 namespace Sigabrt {
+    /**
+     * \namespace Sigabrt::Numeric
+     * 
+     * \brief Sub namespace with all numeric classes and functions.
+     * */
     namespace Numeric {
         namespace {
             template <typename T>
@@ -43,7 +53,9 @@ namespace Sigabrt {
         }
         
         /**
-         * \fn rref
+         * \function rref
+         * 
+         * \brief Function to perform RREF on a matrix.
          * 
          * This function performs a vanilla RREF reduction on a matrix. There is no restriction on the shape of the matrix.
          * Existence of free elements after the computation is complete will restult in a `FREE_COLUMNS_RREF` error. Note,
@@ -108,7 +120,9 @@ namespace Sigabrt {
         }
         
         /**
-         * \fn rref
+         * \function rref
+         * 
+         * \brief Function to perform RREF on a matrix.
          * 
          * This function performs a vanilla RREF reduction on a matrix. There is no restriction on the shape of the matrix.
          * Existence of free elements after the computation is complete will restult in a `FREE_COLUMNS_RREF` error. Note,
@@ -190,7 +204,9 @@ namespace Sigabrt {
         }
         
         /**
-         * \fn gsuaaJordan
+         * \function gsuaaJordan
+         * 
+         * \brief Function to solve a system of linear equations.
          * 
          * This is the Gauss Jordan elimination algorithm to sole a system of linear equations. It takes a non const
          * matrix (of type `Matrix<T>`) as input. The matrix is expected to be an augmented matrix with proper number
@@ -261,7 +277,9 @@ namespace Sigabrt {
         }
         
         /**
-         * \fn gsuaaJordan
+         * \function gsuaaJordan
+         * 
+         * \brief Function to solve a system of linear equations.
          * 
          * This is the Gauss Jordan elimination algorithm to sole a system of linear equations. It takes a non const
          * matrix (of type `Matrix<T>`) as input. The matrix is expected to be an augmented matrix with proper number

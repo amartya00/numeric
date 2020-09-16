@@ -12,7 +12,7 @@
 #include <benchmark/benchmark.hpp>
 
 using Sigabrt::Numeric::Models::RunInfo;
-using Sigabrt::Numeric::Benchmark;
+using Sigabrt::Benchmark::Benchmark;
 
 double max(const std::vector<double>& arr) {
     double maxItem {arr[0]};
