@@ -83,11 +83,67 @@ SCENARIO("Gauss Jordan elimination.") {
             THEN("I should get back an error in the result.") {
                 
                 REQUIRE(OperationType::ERR == result.type);
-                REQUIRE(ErrorCode::FREE_COLUMNS_RREF == *result.error);
+                REQUIRE(ErrorCode::NO_SOLUTIONS == *result.error);
                 REQUIRE(Unit::unit == *result.val);
                 REQUIRE(
                     std::string(
-                        "Free columns detected in RREF form. this system does not have a unique solution."
+                        "This system of equations has no solutions."
+                    ).compare(*result.message) == 0
+                );
+            }
+        }
+    }
+    
+    GIVEN("I have a matrix that I know has infinite solutions.") {
+        Matrix<double> testInput {
+            {
+                {11, 22, 17, 100, 100},
+                {13, 22, 99, 123, 145},
+                {11, 22, 17, 100, 100},
+                {2,  4, 63,  98, 1413}
+            }
+        };
+        
+        WHEN("I run it through gauss jordan algorithm.") {
+            
+            Result<Unit, ErrorCode> result = gaussJordan(testInput);
+            
+            THEN("I should get back an error in the result.") {
+                
+                REQUIRE(OperationType::ERR == result.type);
+                REQUIRE(ErrorCode::INFINITE_SOLUTIONS == *result.error);
+                REQUIRE(Unit::unit == *result.val);
+                REQUIRE(
+                    std::string(
+                        "This system of equations has infinite solutions."
+                    ).compare(*result.message) == 0
+                );
+            }
+        }
+    }
+    
+    GIVEN("I have a matrix that I know has infinite solutions.") {
+        Matrix<double> testInput {
+            {
+                {9, 22, 17, 100, 11},
+                {13, 22, 99, 123, 145},
+                {9, 22, 17, 100, 11},
+                {2,  4, 63,  98, 1413}
+            }
+        };
+        
+        WHEN("I run it through gauss jordan algorithm with rounding off.") {
+            
+            Result<Unit, ErrorCode> result = gaussJordan(testInput, 1e-10);
+            
+            THEN("I should get back an error in the result.") {
+                
+                REQUIRE(OperationType::ERR == result.type);
+                REQUIRE(ErrorCode::INFINITE_SOLUTIONS == *result.error);
+                REQUIRE(Unit::unit == *result.val);
+                REQUIRE(
+                    std::string(
+                        "This system of equations has infinite solutions."
                     ).compare(*result.message) == 0
                 );
             }

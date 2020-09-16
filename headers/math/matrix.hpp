@@ -4,6 +4,7 @@
 
 #include <cstddef>
 #include <exception>
+#include<iostream>
 #include <memory>
 
 #include <math/vector.hpp>
@@ -125,7 +126,7 @@ namespace Sigabrt {
 
             Sigabrt::Numeric::Models::Slice<T>& operator[](const std::size_t& row) {
                 if (row >= nrows) {
-                    throw std::out_of_range("Array index out of range");
+                    throw std::out_of_range("Matrix row index out of range.");
                 }
                 
                 return rows[row];
@@ -133,7 +134,7 @@ namespace Sigabrt {
 
             const Sigabrt::Numeric::Models::Slice<T>& operator[](const std::size_t& row) const {
                 if (row >= nrows) {
-                    throw std::out_of_range("Array index out of range");
+                    throw std::out_of_range("Matrix row index out of range.");
                 }
                 return rows[row];
             }

@@ -1,4 +1,5 @@
 #include <models.hpp>
+#include <math/rref.hpp>
 #include <benchmark/benchmark.hpp>
 #include <iostream>
 #include <vector>

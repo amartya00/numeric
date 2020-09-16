@@ -32,7 +32,9 @@ namespace Sigabrt {
             enum class ErrorCode {
                 UNKNOWN_ERROR,
                 UNDERDETERMINED_SYSTEM,
-                FREE_COLUMNS_RREF
+                FREE_COLUMNS_RREF,
+                INFINITE_SOLUTIONS,
+                NO_SOLUTIONS
             };
             
             /**
