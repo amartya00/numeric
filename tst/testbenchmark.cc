@@ -8,10 +8,10 @@
 #include <random>
 
 #include <catch2/catch.hpp>
-#include <models.hpp>
+#include <types/models.hpp>
 #include <benchmark/benchmark.hpp>
 
-using Sigabrt::Numeric::Models::RunInfo;
+using Sigabrt::Types::RunInfo;
 using Sigabrt::Benchmark::Benchmark;
 
 double max(const std::vector<double>& arr) {

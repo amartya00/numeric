@@ -8,7 +8,7 @@
 #include <type_traits>
 #include <vector>
 
-#include <models.hpp>
+#include <types/models.hpp>
 
 /**
  * \namespace Sigabrt
@@ -17,14 +17,14 @@
  * */
 namespace Sigabrt {
     /**
-     * \namespace Sigabrt::Numeric
+     * \namespace Sigabrt::Types
      * 
-     * \brief Sub namespace with all numeric classes and functions.
+     * \brief The namespace containing some special types.
      * */
-    namespace Numeric {
+    namespace Types {
         /**
          * \class Vector
-         * \tparam T: Some numeric type
+         * \tparam T Some numeric type
          * 
          * \brief Vector class
          * 

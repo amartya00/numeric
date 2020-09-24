@@ -6,7 +6,7 @@
 #include <iostream>
 #include <map>
 
-#include <models.hpp>
+#include <types/models.hpp>
 
 /**
  * \namespace Sigabrt
@@ -49,7 +49,7 @@ namespace Sigabrt {
          * */
         template <typename Input, typename Output, typename It> class Benchmark {
             static_assert(
-                Sigabrt::Numeric::Models::IsForwardIteratorOfType<It, Sigabrt::Numeric::Models::RunInfo>::value,
+                Sigabrt::Types::IsForwardIteratorOfType<It, Sigabrt::Types::RunInfo>::value,
                 "The inputs argument has to be a forward iterator of type RunInfo."
             );
         private:
@@ -57,11 +57,13 @@ namespace Sigabrt {
             std::function<Output(Input)> dut;
             It start;
             It end;
-            std::map<unsigned long, Sigabrt::Numeric::Models::RunInfo> runTimes {};
+            std::map<unsigned long, Sigabrt::Types::RunInfo> runTimes {};
         
         public:
             /**
-             * \fn Constructor
+             * \brief Cobstructor
+             * 
+             * Constructs a benchmark object.
              * 
              * \param inputGen (std::function) The input generator as explained before.
              * 
@@ -80,7 +82,7 @@ namespace Sigabrt {
 
             
             /**
-             * \fn Run
+             * \brief Run the benchmark, and populate the results table.
              * 
              * This function runs the benchmarks and populates the runtimes in the input-size vs run info map.
              * 
@@ -90,7 +92,7 @@ namespace Sigabrt {
             const Benchmark<Input, Output, It>& run() {
                 // Run through input sizes.
                 for (auto it = start; it < end; it++) {
-                    Sigabrt::Numeric::Models::RunInfo run {*it};
+                    Sigabrt::Types::RunInfo run {*it};
                     
                     auto input1 {inputGen(run.inputSize)};
                     auto input2 {inputGen(run.inputSize)};
@@ -112,17 +114,17 @@ namespace Sigabrt {
             }
             
             /**
-             * \fn GetRunInfos
+             * \brief Get the results table.
              * 
              * This function returns a const reference to thr map of input size vs run infos.
              * 
              * \return (const& `std::map<unsigned long, RunInfo>`) The map with the results
              * */
-            const std::map<unsigned long, Sigabrt::Numeric::Models::RunInfo>& getRunInfos() const {
+            const std::map<unsigned long, Sigabrt::Types::RunInfo>& getRunInfos() const {
                 return runTimes;
             }
             
-            const std::map<unsigned long, Sigabrt::Numeric::Models::RunInfo>& getRunInfos() {
+            const std::map<unsigned long, Sigabrt::Types::RunInfo>& getRunInfos() {
                 return runTimes;
             }
         };

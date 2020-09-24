@@ -1,16 +1,17 @@
 #define CATCH_CONFIG_MAIN
 
 #include <catch2/catch.hpp>
-#include <math/matrix.hpp>
+#include <types/matrix.hpp>
+#include <types/models.hpp>
 #include <math/rref.hpp>
 
-using Sigabrt::Numeric::Matrix;
+using Sigabrt::Types::Matrix;
 using Sigabrt::Numeric::gaussJordan;
-using Sigabrt::Numeric::Models::Slice;
-using Sigabrt::Numeric::Models::Result;
-using Sigabrt::Numeric::Models::Unit;
-using Sigabrt::Numeric::Models::ErrorCode;
-using Sigabrt::Numeric::Models::OperationType;
+using Sigabrt::Types::Slice;
+using Sigabrt::Types::Result;
+using Sigabrt::Types::Unit;
+using Sigabrt::Types::ErrorCode;
+using Sigabrt::Types::OperationType;
 
 template <typename T> bool isEqual(const Matrix<T>& matrix, const std::vector<std::vector<T>>& vecs) {
     if (matrix.getRows() != vecs.size()) {

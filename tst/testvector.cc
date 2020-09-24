@@ -6,9 +6,9 @@
 #include <iostream>
 
 #include <catch2/catch.hpp>
-#include <math/vector.hpp>
+#include <types/vector.hpp>
 
-using Sigabrt::Numeric::Vector;
+using Sigabrt::Types::Vector;
 
 SCENARIO("Vector instantiation.") {
     

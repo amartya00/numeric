@@ -7,8 +7,8 @@
 #include<iostream>
 #include <memory>
 
-#include <math/vector.hpp>
-#include <models.hpp>
+#include <types/vector.hpp>
+#include <types/models.hpp>
 
 /**
  * \namespace Sigabrt
@@ -17,14 +17,14 @@
  * */
 namespace Sigabrt {
     /**
-     * \namespace Sigabrt::Numeric
+     * \namespace Sigabrt::Types
      * 
-     * \brief Sub namespace with all numeric classes and functions.
+     * \brief The namespace containing some special types.
      * */
-    namespace Numeric {
+    namespace Types {
         /**
          * \class Matrix
-         * \tparam T: Some numeric type
+         * \tparam T Some numeric type
          * 
          * \brief Matrix class
          * 
@@ -42,7 +42,7 @@ namespace Sigabrt {
          * NOTE: All row operations throw `out_of_range` error on invalid rows.
          * 
          * This also has the addition and multiplication operators overriden. Multiply operator can also multiply the matrix with a vector
-         * (`Sigabrt::Numeric::Vector`), not `std::vector`.
+         * (`Sigabrt::Types::Vector`), not `std::vector`.
          * 
          * NOTE: When we matrix*vector, we assume it's a column vector and the result is a column vector as well, but when doing vector
          * *matrix, we assume the vector and the result are row vectors.
@@ -56,7 +56,7 @@ namespace Sigabrt {
         private:
             std::size_t nrows;
             std::size_t ncols;
-            std::unique_ptr<Sigabrt::Numeric::Models::Slice<T>[]> rows;
+            std::unique_ptr<Sigabrt::Types::Slice<T>[]> rows;
             std::unique_ptr<T[]> storage;
             
             void initializeSlices() {
@@ -70,8 +70,8 @@ namespace Sigabrt {
             /**
              * \brief Constructs a nrows x ncols empty matrix.
              * 
-             * \param nrows: Number of rows.
-             * \param ncols: Number of columns in matrix.
+             * \param nrows Number of rows.
+             * \param ncols Number of columns in matrix.
              * 
              * \return Matrix<T> (rows x cols)
              * 
@@ -81,15 +81,15 @@ namespace Sigabrt {
                 const std::size_t& ncols
             ): nrows {nrows}, 
                 ncols {ncols}, 
-                rows {std::make_unique<Sigabrt::Numeric::Models::Slice<T>[]>(nrows)},
+                rows {std::make_unique<Sigabrt::Types::Slice<T>[]>(nrows)},
                 storage {std::make_unique<T[]>(nrows * ncols)} {
                     initializeSlices();
                 }
 
             /**
-             * \brief: Constructs a nrows x ncols matrix from a vector of vectors.
+             * \brief Constructs a nrows x ncols matrix from a vector of vectors.
              * 
-             * \param vecs: vector of vectors of type `T`
+             * \param vecs vector of vectors of type `T`
              * 
              * \return Matrix<T>
              * */
@@ -101,7 +101,7 @@ namespace Sigabrt {
                 } else {
                     nrows = vecs.size();
                     ncols = vecs[0].size();
-                    rows = std::make_unique<Sigabrt::Numeric::Models::Slice<T>[]>(nrows);
+                    rows = std::make_unique<Sigabrt::Types::Slice<T>[]>(nrows);
                     storage = std::make_unique<T[]>(nrows * ncols);
                     
                     for (std::size_t i = 0; i < nrows; i++) {
@@ -120,9 +120,9 @@ namespace Sigabrt {
             void operator=(const Matrix<T> other)=delete;
 
             /**
-             * \brief: Move constructor
+             * \brief Move constructor
              * 
-             * \param other: Matrix<T>&&
+             * \param other Matrix<T>&&
              * 
              * \return Matrix<T>
              * 
@@ -134,7 +134,7 @@ namespace Sigabrt {
                 other.storage = nullptr;
             }
 
-            Sigabrt::Numeric::Models::Slice<T>& operator[](const std::size_t& row) {
+            Sigabrt::Types::Slice<T>& operator[](const std::size_t& row) {
                 if (row >= nrows) {
                     throw std::out_of_range("Matrix row index out of range.");
                 }
@@ -142,32 +142,30 @@ namespace Sigabrt {
                 return rows[row];
             }
 
-            const Sigabrt::Numeric::Models::Slice<T>& operator[](const std::size_t& row) const {
+            const Sigabrt::Types::Slice<T>& operator[](const std::size_t& row) const {
                 if (row >= nrows) {
                     throw std::out_of_range("Matrix row index out of range.");
                 }
                 return rows[row];
             }
 
-            const Sigabrt::Numeric::Models::Slice<T>* begin() const {
+            const Sigabrt::Types::Slice<T>* begin() const {
                 return &rows[0];
             }
 
-            const Sigabrt::Numeric::Models::Slice<T>* end() const {
+            const Sigabrt::Types::Slice<T>* end() const {
                 return &rows[nrows];
             }
 
-            Sigabrt::Numeric::Models::Slice<T>* begin() {
+            Sigabrt::Types::Slice<T>* begin() {
                 return &rows[0];
             }
 
-            Sigabrt::Numeric::Models::Slice<T>* end() {
+            Sigabrt::Types::Slice<T>* end() {
                 return &rows[nrows];
             }
 
-            /**
-             * \fn identity
-             * 
+            /**             * 
              * \brief Identity matrix generator.
              * 
              * This static function generates and returns a NxN identity matrix of type `T`.
@@ -185,15 +183,13 @@ namespace Sigabrt {
                 return retval;
             }
 
-            /**
-             * \fn zero
-             * 
+            /**      
              * \brief Zero matrix generator
              * 
              * This function generates a Zero matrix of dimensions nrows x ncols.
              * 
-             * \param nrows: Rows in the Zero matrix.
-             * \param ncols: Cols in the Zero matrix.
+             * \param nrows Rows in the Zero matrix.
+             * \param ncols Cols in the Zero matrix.
              * 
              * \return Matrix<T> (nrows x ncols), with all elements set to 0.
              * */
@@ -235,12 +231,12 @@ namespace Sigabrt {
              * This function replaces a row with a linear combination of it and another row. R1 -> aR1 + bR2.
              * This function 
              * 
-             * \param r1: The row to replace.
-             * \param a: The factor to scale R1 by in the linear combination.
-             * \param r2: The other row.
-             * \param b: The factir to scale R2 by in the linear combination.
+             * \param r1 The row to replace.
+             * \param a The factor to scale R1 by in the linear combination.
+             * \param r2 The other row.
+             * \param b The factir to scale R2 by in the linear combination.
              * 
-             * \throw e: std::out_of_range if either r1 or r2 exeeds the length of the matrix.
+             * \throw e std::out_of_range if either r1 or r2 exeeds the length of the matrix.
              * 
              * \return Mutable reference to this matrix.
              * */
@@ -265,10 +261,10 @@ namespace Sigabrt {
              * 
              * This function exchanges 2 rows in the matrix.
              * 
-             * \param r1: First row to exchange.
-             * \param r2: Other row to exchange.
+             * \param r1 First row to exchange.
+             * \param r2 Other row to exchange.
              * 
-             * \throw e: std::out_of_range if either r1 or r2 exeeds the length of the matrix.
+             * \throw e std::out_of_range if either r1 or r2 exeeds the length of the matrix.
              * 
              * \return Mutable reference to this matrix.
              * */
@@ -286,10 +282,10 @@ namespace Sigabrt {
              * 
              * This function scales a row by a factor.
              * 
-             * \param row: The row to scale.
-             * \param factor: The factor to scale the row by.
+             * \param row The row to scale.
+             * \param factor The factor to scale the row by.
              * 
-             * \throw e: std::out_of_range if either r1 or r2 exeeds the length of the matrix.
+             * \throw e std::out_of_range if either r1 or r2 exeeds the length of the matrix.
              * 
              * \return Mutable reference to this matrix.
              * */
@@ -309,7 +305,7 @@ namespace Sigabrt {
              * This function multiplies each element of a matrix by a scalar. This is not implemented via an operator
              * as producing a new matrix on each scaling operation is not a common operation and wasteful.
              * 
-             * \param scalar: The scalar value.
+             * \param scalar The scalar value.
              * 
              * \return Mutable reference to this matrix.
              * 
@@ -372,7 +368,7 @@ namespace Sigabrt {
         }
         
         // Override multiply operator  lhs = matrix and rhs = vector.
-        template <typename T> Sigabrt::Numeric::Vector<T> operator*(const Matrix<T>& lhs, const Sigabrt::Numeric::Vector<T>& rhs) {
+        template <typename T> Sigabrt::Types::Vector<T> operator*(const Matrix<T>& lhs, const Sigabrt::Types::Vector<T>& rhs) {
             if (lhs.getCols() != rhs.size()) {
                 throw std::invalid_argument("Incompatible matrix and vector for multiplication.");
             }
@@ -392,7 +388,7 @@ namespace Sigabrt {
         }
         
         // Override multiply operator lhs = vector and rhs = matrix.
-        template <typename T> Sigabrt::Numeric::Vector<T> operator*(const Sigabrt::Numeric::Vector<T>& lhs, const Matrix<T>& rhs) {
+        template <typename T> Sigabrt::Types::Vector<T> operator*(const Sigabrt::Types::Vector<T>& lhs, const Matrix<T>& rhs) {
             return rhs*lhs;
         }
         

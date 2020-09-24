@@ -6,11 +6,11 @@
 #include <iostream>
 
 #include <catch2/catch.hpp>
-#include <math/matrix.hpp>
-#include <math/vector.hpp>
+#include <types/matrix.hpp>
+#include <types/vector.hpp>
 
-using Sigabrt::Numeric::Matrix;
-using Sigabrt::Numeric::Vector;
+using Sigabrt::Types::Matrix;
+using Sigabrt::Types::Vector;
 
 template <typename T> bool isEqual(const Matrix<T>& matrix, const std::vector<std::vector<T>>& vecs) {
     if (matrix.getRows() != vecs.size()) {

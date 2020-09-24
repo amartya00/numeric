@@ -15,7 +15,7 @@ namespace Sigabrt {
     /**
      * \namespace Sigabrt::Types
      * 
-     * \brief The root namespace.
+     * \brief The namespace containing some special types.
      * */
     namespace Types {
         namespace {
@@ -46,14 +46,54 @@ namespace Sigabrt {
                 return n2;
             }
         }
+        
+        /**
+         * \class Fraction
+         * 
+         * \brief A struct representing a fraction in `p/q` format.
+         * 
+         * This structure representa rational numbers with the caviat that both the numerator and denominator are represented
+         * by long integers (64 bit in x86). The main advantage of this structure over using primitive floating point numbers
+         * is the maintainence of precision during divisions. For example, in situations like gauss jordan elimination where 
+         * equating with 0s is critical in determining existence of solutions, loss of precision can cause incorrect results.
+         * 
+         * Although this library's Gauss Jordan algorithm provides an option to specify precision for 0, using fractions to 
+         * maintain precision will be another alternative.
+         * 
+         * NOTE: Once constructed, the value of the object cannot be changed, as both the num and den are consts.
+         * 
+         * \var num The numerator of the fraction.
+         * 
+         * \var den The denominator of the fraction.
+         * */
         struct Fraction {
         private:
             Fraction(const long& _gcd, const long& num, const long& den): num {num/_gcd}, den {den/_gcd} {}
         public:
             const long num;
             const long den;
+            
+            /**
+             * \brief Constructor
+             * 
+             * Constructs a fraction with `num` and `den`, in it's most reduced form. So Fraction {18, 15}
+             * will restlt in a `Fraction` structure with `num` set to 6 and `den` set to 5.
+             * 
+             * \param num The numerator.
+             * 
+             * \param den The denominator. This cannot be 0.
+             * 
+             * \exception std::invalid_argument thrown when the denominator is specified as 0.
+             * */
             Fraction(const long& num, const long& den): Fraction(validateInputsAndReduce(num, den), num, den) {}                
             
+            /**
+             * \brief double 
+             * 
+             * Implicit conversion to double.
+             * 
+             * \return Corresponding double precision floating point value.
+             * */
             operator double() {
                 return static_cast<double>(num)/static_cast<double>(den);
             }
@@ -62,6 +102,7 @@ namespace Sigabrt {
                 return static_cast<double>(num)/static_cast<double>(den);
             }
         };
+        
         
         std::ostream& operator<<(std::ostream& stream, const Fraction& f) {
             stream << f.num << '/' << f.den;

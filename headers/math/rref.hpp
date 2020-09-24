@@ -4,8 +4,8 @@
 #include <optional>
 #include <vector>
 
-#include <models.hpp>
-#include <math/matrix.hpp>
+#include <types/models.hpp>
+#include <types/matrix.hpp>
 
 /**
  * \namespace Sigabrt
@@ -22,7 +22,7 @@ namespace Sigabrt {
         namespace {
             template <typename T>
             std::optional<std::size_t> findNextPivot(
-                const Sigabrt::Numeric::Matrix<T>& matrix, 
+                const Sigabrt::Types::Matrix<T>& matrix, 
                 const std::size_t& startRow, 
                 const std::size_t& startCol) {
                 for (std::size_t i = startRow+1; i < matrix.getRows(); i++) {
@@ -33,7 +33,7 @@ namespace Sigabrt {
                 return std::nullopt;
             }
             
-            template<typename T> bool identityRow(const Sigabrt::Numeric::Models::Slice<T>& row) {
+            template<typename T> bool identityRow(const Sigabrt::Types::Slice<T>& row) {
                 const T& first {row[0]};
                 for (const auto& elem : row) {
                     if (elem != first) {
@@ -70,8 +70,8 @@ namespace Sigabrt {
          *   Possible error codes:
          *   - `FREE_COLUMNS_RREF`: If free columns are detected during reduction. This indicates a lack of a unique solution.
          * */
-        template <typename T> Sigabrt::Numeric::Models::Result<Sigabrt::Numeric::Models::Unit, Sigabrt::Numeric::Models::ErrorCode> 
-        rref(Sigabrt::Numeric::Matrix<T>& matrix) {
+        template <typename T> Sigabrt::Types::Result<Sigabrt::Types::Unit, Sigabrt::Types::ErrorCode> 
+        rref(Sigabrt::Types::Matrix<T>& matrix) {
             bool freeElements {false};
             for (std::size_t i = 0; i < matrix.getRows(); i++) {
                 // If pivot element is zero, we need to make it non zero
@@ -102,16 +102,16 @@ namespace Sigabrt {
             }
             
             if (freeElements) {
-                return Sigabrt::Numeric::Models::Result<Sigabrt::Numeric::Models::Unit, Sigabrt::Numeric::Models::ErrorCode> {
-                    Sigabrt::Numeric::Models::OperationType::ERR,
-                    Sigabrt::Numeric::Models::Unit::unit,
-                    Sigabrt::Numeric::Models::ErrorCode::FREE_COLUMNS_RREF,
+                return Sigabrt::Types::Result<Sigabrt::Types::Unit, Sigabrt::Types::ErrorCode> {
+                    Sigabrt::Types::OperationType::ERR,
+                    Sigabrt::Types::Unit::unit,
+                    Sigabrt::Types::ErrorCode::FREE_COLUMNS_RREF,
                     std::nullopt
                 };
             } else {
-                return Sigabrt::Numeric::Models::Result<Sigabrt::Numeric::Models::Unit, Sigabrt::Numeric::Models::ErrorCode> {
-                    Sigabrt::Numeric::Models::OperationType::OK,
-                    Sigabrt::Numeric::Models::Unit::unit,
+                return Sigabrt::Types::Result<Sigabrt::Types::Unit, Sigabrt::Types::ErrorCode> {
+                    Sigabrt::Types::OperationType::OK,
+                    Sigabrt::Types::Unit::unit,
                     std::nullopt,
                     std::nullopt
                 };
@@ -146,8 +146,8 @@ namespace Sigabrt {
          *   Possible error codes:
          *   - `FREE_COLUMNS_RREF`: If free columns are detected during reduction. This indicates a lack of a unique solution.
          * */
-        template <typename T> Sigabrt::Numeric::Models::Result<Sigabrt::Numeric::Models::Unit, Sigabrt::Numeric::Models::ErrorCode> 
-        rref(Sigabrt::Numeric::Matrix<T>& matrix, const double& zeroPrecision) {
+        template <typename T> Sigabrt::Types::Result<Sigabrt::Types::Unit, Sigabrt::Types::ErrorCode> 
+        rref(Sigabrt::Types::Matrix<T>& matrix, const double& zeroPrecision) {
             bool freeElements {false};
             for (std::size_t i = 0; i < matrix.getRows(); i++) {
                 // If pivot element is zero, we need to make it non zero
@@ -186,16 +186,16 @@ namespace Sigabrt {
             }
             
             if (freeElements) {
-                return Sigabrt::Numeric::Models::Result<Sigabrt::Numeric::Models::Unit, Sigabrt::Numeric::Models::ErrorCode> {
-                    Sigabrt::Numeric::Models::OperationType::ERR,
-                    Sigabrt::Numeric::Models::Unit::unit,
-                    Sigabrt::Numeric::Models::ErrorCode::FREE_COLUMNS_RREF,
+                return Sigabrt::Types::Result<Sigabrt::Types::Unit, Sigabrt::Types::ErrorCode> {
+                    Sigabrt::Types::OperationType::ERR,
+                    Sigabrt::Types::Unit::unit,
+                    Sigabrt::Types::ErrorCode::FREE_COLUMNS_RREF,
                     std::nullopt
                 };
             } else {
-                return Sigabrt::Numeric::Models::Result<Sigabrt::Numeric::Models::Unit, Sigabrt::Numeric::Models::ErrorCode> {
-                    Sigabrt::Numeric::Models::OperationType::OK,
-                    Sigabrt::Numeric::Models::Unit::unit,
+                return Sigabrt::Types::Result<Sigabrt::Types::Unit, Sigabrt::Types::ErrorCode> {
+                    Sigabrt::Types::OperationType::OK,
+                    Sigabrt::Types::Unit::unit,
                     std::nullopt,
                     std::nullopt
                 };
@@ -229,43 +229,43 @@ namespace Sigabrt {
          *   - `FREE_COLUMNS_RREF`: If free columns are detected during reduction. This indicates a lack of a unique solution.
          * 
          * */
-        template <typename T> Sigabrt::Numeric::Models::Result<Sigabrt::Numeric::Models::Unit, Sigabrt::Numeric::Models::ErrorCode> 
-        gaussJordan(Sigabrt::Numeric::Matrix<T>& matrix) {
+        template <typename T> Sigabrt::Types::Result<Sigabrt::Types::Unit, Sigabrt::Types::ErrorCode> 
+        gaussJordan(Sigabrt::Types::Matrix<T>& matrix) {
             // Step 0: Validate matrix in augmented form
             if (matrix.getRows() < matrix.getCols()-1) {
-                return Sigabrt::Numeric::Models::Result<Sigabrt::Numeric::Models::Unit, Sigabrt::Numeric::Models::ErrorCode> {
-                    Sigabrt::Numeric::Models::OperationType::ERR,
-                    Sigabrt::Numeric::Models::Unit::unit,
-                    Sigabrt::Numeric::Models::ErrorCode::UNDERDETERMINED_SYSTEM,
+                return Sigabrt::Types::Result<Sigabrt::Types::Unit, Sigabrt::Types::ErrorCode> {
+                    Sigabrt::Types::OperationType::ERR,
+                    Sigabrt::Types::Unit::unit,
+                    Sigabrt::Types::ErrorCode::UNDERDETERMINED_SYSTEM,
                     std::string("The number of equations in the augmented matrix is less than the number of variables.")
                 };
             }
             
             auto retval = rref(matrix);
-            if (retval.type == Sigabrt::Numeric::Models::OperationType::ERR) {
-                if (retval.error == Sigabrt::Numeric::Models::ErrorCode::FREE_COLUMNS_RREF) {
+            if (retval.type == Sigabrt::Types::OperationType::ERR) {
+                if (retval.error == Sigabrt::Types::ErrorCode::FREE_COLUMNS_RREF) {
                     for (std::size_t rowNum = 0; rowNum < matrix.getRows(); rowNum++) {
                         if (identityRow(matrix[matrix.getRows() - rowNum -1])) {
-                            return Sigabrt::Numeric::Models::Result<Sigabrt::Numeric::Models::Unit, Sigabrt::Numeric::Models::ErrorCode> {
-                                Sigabrt::Numeric::Models::OperationType::ERR,
-                                Sigabrt::Numeric::Models::Unit::unit,
-                                Sigabrt::Numeric::Models::ErrorCode::INFINITE_SOLUTIONS,
+                            return Sigabrt::Types::Result<Sigabrt::Types::Unit, Sigabrt::Types::ErrorCode> {
+                                Sigabrt::Types::OperationType::ERR,
+                                Sigabrt::Types::Unit::unit,
+                                Sigabrt::Types::ErrorCode::INFINITE_SOLUTIONS,
                                 std::string("This system of equations has infinite solutions.")
                             };
                         }
                     }
-                    return Sigabrt::Numeric::Models::Result<Sigabrt::Numeric::Models::Unit, Sigabrt::Numeric::Models::ErrorCode> {
-                        Sigabrt::Numeric::Models::OperationType::ERR,
-                        Sigabrt::Numeric::Models::Unit::unit,
-                        Sigabrt::Numeric::Models::ErrorCode::NO_SOLUTIONS,
+                    return Sigabrt::Types::Result<Sigabrt::Types::Unit, Sigabrt::Types::ErrorCode> {
+                        Sigabrt::Types::OperationType::ERR,
+                        Sigabrt::Types::Unit::unit,
+                        Sigabrt::Types::ErrorCode::NO_SOLUTIONS,
                         std::string("This system of equations has no solutions.")
                     };
                 }
                 else {
-                    return Sigabrt::Numeric::Models::Result<Sigabrt::Numeric::Models::Unit, Sigabrt::Numeric::Models::ErrorCode> {
-                        Sigabrt::Numeric::Models::OperationType::ERR,
-                        Sigabrt::Numeric::Models::Unit::unit,
-                        Sigabrt::Numeric::Models::ErrorCode::UNKNOWN_ERROR,
+                    return Sigabrt::Types::Result<Sigabrt::Types::Unit, Sigabrt::Types::ErrorCode> {
+                        Sigabrt::Types::OperationType::ERR,
+                        Sigabrt::Types::Unit::unit,
+                        Sigabrt::Types::ErrorCode::UNKNOWN_ERROR,
                         std::nullopt
                     };
                 }
@@ -311,43 +311,43 @@ namespace Sigabrt {
          *   - `FREE_COLUMNS_RREF`: If free columns are detected during reduction. This indicates a lack of a unique solution.
          * 
          * */
-        template <typename T> Sigabrt::Numeric::Models::Result<Sigabrt::Numeric::Models::Unit, Sigabrt::Numeric::Models::ErrorCode> 
-        gaussJordan(Sigabrt::Numeric::Matrix<T>& matrix, const double& zeroPrecision) {
+        template <typename T> Sigabrt::Types::Result<Sigabrt::Types::Unit, Sigabrt::Types::ErrorCode> 
+        gaussJordan(Sigabrt::Types::Matrix<T>& matrix, const double& zeroPrecision) {
             // Step 0: Validate matrix in augmented form
             if (matrix.getRows() < matrix.getCols()-1) {
-                return Sigabrt::Numeric::Models::Result<Sigabrt::Numeric::Models::Unit, Sigabrt::Numeric::Models::ErrorCode> {
-                    Sigabrt::Numeric::Models::OperationType::ERR,
-                    Sigabrt::Numeric::Models::Unit::unit,
-                    Sigabrt::Numeric::Models::ErrorCode::UNDERDETERMINED_SYSTEM,
+                return Sigabrt::Types::Result<Sigabrt::Types::Unit, Sigabrt::Types::ErrorCode> {
+                    Sigabrt::Types::OperationType::ERR,
+                    Sigabrt::Types::Unit::unit,
+                    Sigabrt::Types::ErrorCode::UNDERDETERMINED_SYSTEM,
                     std::string("The number of equations in the augmented matrix is less than the number of variables.")
                 };
             }
             
             auto retval = rref(matrix, zeroPrecision);
-            if (retval.type == Sigabrt::Numeric::Models::OperationType::ERR) {
-                if (retval.error == Sigabrt::Numeric::Models::ErrorCode::FREE_COLUMNS_RREF) {
+            if (retval.type == Sigabrt::Types::OperationType::ERR) {
+                if (retval.error == Sigabrt::Types::ErrorCode::FREE_COLUMNS_RREF) {
                     for (std::size_t rowNum = 0; rowNum < matrix.getRows(); rowNum++) {
                         if (identityRow(matrix[matrix.getRows() - rowNum -1])) {
-                            return Sigabrt::Numeric::Models::Result<Sigabrt::Numeric::Models::Unit, Sigabrt::Numeric::Models::ErrorCode> {
-                                Sigabrt::Numeric::Models::OperationType::ERR,
-                                Sigabrt::Numeric::Models::Unit::unit,
-                                Sigabrt::Numeric::Models::ErrorCode::INFINITE_SOLUTIONS,
+                            return Sigabrt::Types::Result<Sigabrt::Types::Unit, Sigabrt::Types::ErrorCode> {
+                                Sigabrt::Types::OperationType::ERR,
+                                Sigabrt::Types::Unit::unit,
+                                Sigabrt::Types::ErrorCode::INFINITE_SOLUTIONS,
                                 std::string("This system of equations has infinite solutions.")
                             };
                         }
                     }
-                    return Sigabrt::Numeric::Models::Result<Sigabrt::Numeric::Models::Unit, Sigabrt::Numeric::Models::ErrorCode> {
-                        Sigabrt::Numeric::Models::OperationType::ERR,
-                        Sigabrt::Numeric::Models::Unit::unit,
-                        Sigabrt::Numeric::Models::ErrorCode::NO_SOLUTIONS,
+                    return Sigabrt::Types::Result<Sigabrt::Types::Unit, Sigabrt::Types::ErrorCode> {
+                        Sigabrt::Types::OperationType::ERR,
+                        Sigabrt::Types::Unit::unit,
+                        Sigabrt::Types::ErrorCode::NO_SOLUTIONS,
                         std::string("This system of equations has no solutions.")
                     };
                 }
                 else {
-                    return Sigabrt::Numeric::Models::Result<Sigabrt::Numeric::Models::Unit, Sigabrt::Numeric::Models::ErrorCode> {
-                        Sigabrt::Numeric::Models::OperationType::ERR,
-                        Sigabrt::Numeric::Models::Unit::unit,
-                        Sigabrt::Numeric::Models::ErrorCode::UNKNOWN_ERROR,
+                    return Sigabrt::Types::Result<Sigabrt::Types::Unit, Sigabrt::Types::ErrorCode> {
+                        Sigabrt::Types::OperationType::ERR,
+                        Sigabrt::Types::Unit::unit,
+                        Sigabrt::Types::ErrorCode::UNKNOWN_ERROR,
                         std::nullopt
                     };
                 }
