@@ -26,7 +26,7 @@ namespace Sigabrt {
          * \class Vector
          * \tparam T Some numeric type
          * 
-         * \brief Vector class
+         * \brief A class representing a mathematical vector.
          * 
          * This class represents a vector (as in linear algebra). This has a lot of differences from `std::vector` both structurally
          * and in interfaces.

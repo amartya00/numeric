@@ -24,9 +24,10 @@ namespace Sigabrt {
     namespace Types {
         /**
          * \class Matrix
+         * 
          * \tparam T Some numeric type
          * 
-         * \brief Matrix class
+         * \brief A class representing a mathematical matrix.
          * 
          * Matrix stricture. This represents a 2D matrix of elements of type `T` with some constrains. This structure has the copy
          * constructor and assignment operators deleted to prevent extremely expensive operations.

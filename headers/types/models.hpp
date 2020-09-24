@@ -45,6 +45,10 @@ namespace Sigabrt {
         
         /**
          * \class Result
+         * \tparam T The success type.
+         * \tparam E The error type.
+         * 
+         * \brief A class akin to Rust's `Result<T, E>`. Helps us avoid having to throw exceptions.
          * 
          * The `Result<T, E>` type is used to return the results of operations in the library. The usage of a
          * `Result` type to return computations is borrowed from Rust, and is also a neat way to avoid the 
@@ -62,6 +66,13 @@ namespace Sigabrt {
          * your own type. This library will use the enum `ErrorCode`. You can also set the `message` to convey more useful
          * information.
          * 
+         * \var type Represents the result type (Either success or err).
+         * 
+         * \var val Optional successful return value.
+         * 
+         * \var error Optional error return type.
+         * 
+         * \var message Optional error message
          * */
         template <typename T, typename E> struct Result {
             OperationType type {OperationType::ERR};
@@ -73,12 +84,20 @@ namespace Sigabrt {
         /**
          * \class Slice
          * 
+         * \tparam T The pointer type.
+         * 
+         * \brief A class akin to python/rust Slice type (a fat pointer).
+         * 
          * The `Slice<T>` type is meant to provide functionality similar to Rust's `fat pointer` types. It has 2 fields,
          * a start pointer of type `T`, and a size. It provides some convenience overloads:
          *   - Overloaded [] operator for indexing with range checking.
          *   - Overloaded `begin` and `end` methods to enable range for loop.
          * 
          * NOTE: Move and move assignment has been disabled to avoid multiple ownership mess.
+         * 
+         * \var start The start address of type `T`.
+         * 
+         * \var size The numer of elements in the slice.
          * */
         template <typename T> struct Slice {
             T* start;
@@ -125,6 +144,8 @@ namespace Sigabrt {
         /**
          * \enum Unit
          * 
+         * \brief Represents the `void` type.
+         * 
          * This enum is meant to emulate Rust's `Unit` type, so that we can return void types with `Result`. Example
          * `Result<Unit, ErrorCode>`
          * */
@@ -132,6 +153,8 @@ namespace Sigabrt {
 
         /**
          * \class RunInfo 
+         * 
+         * \brief Encapsulates the information associated witha run of a benchmark.
          * 
          * This class will be used for benchmarking algorithms. Each instance of the struct contain information about 1 iteration
          * of the benchmark, as it iterates over input sizes.
@@ -159,6 +182,8 @@ namespace Sigabrt {
         /**
          * \class IsForwardIteratorOfType
          * 
+         * \brief Forward iterator static asserter.
+         * 
          * \tparam It The iterator type. Typically you would do domething like decltype(v1.begin()).
          * 
          * \tparam T The value type that you want the iterator to have.
@@ -175,6 +200,8 @@ namespace Sigabrt {
         template <typename It,typename T, typename=void> struct IsForwardIteratorOfType {
             static constexpr bool value {false};
         };
+        
+        //!\cond NO_DOC
         template <typename It, typename T>
         struct IsForwardIteratorOfType<
             It, 
@@ -192,7 +219,7 @@ namespace Sigabrt {
         >  {
             static constexpr bool value {true};
         };
-        
+        //!\endcond
     }
 
 }

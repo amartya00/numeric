@@ -53,8 +53,6 @@ namespace Sigabrt {
         }
         
         /**
-         * \function rref
-         * 
          * \brief Function to perform RREF on a matrix.
          * 
          * This function performs a vanilla RREF reduction on a matrix. There is no restriction on the shape of the matrix.
@@ -120,8 +118,6 @@ namespace Sigabrt {
         }
         
         /**
-         * \function rref
-         * 
          * \brief Function to perform RREF on a matrix.
          * 
          * This function performs a vanilla RREF reduction on a matrix. There is no restriction on the shape of the matrix.
@@ -204,8 +200,6 @@ namespace Sigabrt {
         }
         
         /**
-         * \function gsuaaJordan
-         * 
          * \brief Function to solve a system of linear equations.
          * 
          * This is the Gauss Jordan elimination algorithm to sole a system of linear equations. It takes a non const
@@ -277,8 +271,6 @@ namespace Sigabrt {
         }
         
         /**
-         * \function gsuaaJordan
-         * 
          * \brief Function to solve a system of linear equations.
          * 
          * This is the Gauss Jordan elimination algorithm to sole a system of linear equations. It takes a non const
