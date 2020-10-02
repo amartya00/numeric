@@ -95,6 +95,17 @@ SCENARIO("Vector operations.") {
                 REQUIRE(500 == v1.mod());
             }
         }
+        
+        WHEN("I negate the vector.") {
+            
+            THEN("I should be able to do so.") {
+                
+                std::vector<double> expected {-3, -4};
+                Vector res {-v1};
+                REQUIRE(std::equal(res.begin(), res.end(), expected.begin()));
+                REQUIRE(5 == v1.mod());
+            }
+        }
     }
     
     GIVEN("I have 2 compatible vectors.") {
@@ -116,7 +127,7 @@ SCENARIO("Vector operations.") {
             
             THEN("I get the expected result.") {
                 
-                std::vector<double> expected {{-1,-1}};
+                std::vector<double> expected {-1,-1};
                 Vector<double> v3 {v1 - v2};
                 REQUIRE(std::equal(v3.begin(), v3.end(), expected.begin()));
             }
@@ -127,6 +138,20 @@ SCENARIO("Vector operations.") {
             THEN("I get the expected result.") {
                 
                 REQUIRE(4 == v1*v2);
+            }
+        }
+        
+        WHEN("I multiply them with scalars.") {
+            
+            Vector<double> res1 {2*v1};
+            Vector<double> res2 {v1*2};
+            
+            THEN("The result vector should be as expected.") {
+                
+                std::vector<double> expected {2, 2};
+                
+                REQUIRE(std::equal(res1.begin(), res1.end(), expected.begin()));
+                REQUIRE(std::equal(res2.begin(), res2.end(), expected.begin()));
             }
         }
     }

@@ -7,6 +7,8 @@
 #include <type_traits>
 #include <vector>
 
+#include <types/fraction.hpp>
+
 /**
  * \namespace Sigabrt
  * 
@@ -220,6 +222,33 @@ namespace Sigabrt {
             static constexpr bool value {true};
         };
         //!\endcond
+        
+        /**
+         * \class IsScalarType
+         * 
+         * \brief Scalar type static asserter
+         * 
+         * \tparam T The type under test
+         * 
+         * This struct can be used to static assert if something is of a scalar type. This is to extend the standard scalar type asserter
+         * to include other scalar types in this library like fractions.
+         * */
+        template <typename T, typename=void> struct IsScalarType {
+            static constexpr bool value {false};
+        };
+        
+        //! \cond NO_DOC
+        template <typename T>
+        struct IsScalarType<
+            T,
+            typename std::enable_if<
+                std::is_arithmetic<T>::value ||
+                std::is_same<Sigabrt::Types::Fraction, typename std::remove_cv<T>::type>::value
+            >::type
+        > {
+            static constexpr bool value {true};
+        };
+        //! \endcond
     }
 
 }

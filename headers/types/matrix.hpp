@@ -211,9 +211,11 @@ namespace Sigabrt {
                 return nrows;
             }
             
+            //! \cond NO_DOC
             const std::size_t& getRows() {
                 return nrows;
             }
+            //! \endcond
             
             /**
              * \brief Get the number of columns in the matrix.
@@ -222,9 +224,11 @@ namespace Sigabrt {
                 return ncols;
             }
             
+            //! \cond NO_DOC
             const std::size_t& getCols() {
                 return ncols;
             }
+            //! \endcond
             
             /**
              * \brief Linear combination of rows.

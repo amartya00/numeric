@@ -51,6 +51,7 @@ namespace Sigabrt {
         private:
             std::size_t length;
             std::unique_ptr<T[]> storage;
+            double magnitude {-1.0};
         public:
             Vector(const std::size_t& length): length {length}, storage {std::make_unique<T[]>(length)} {}
             Vector(const std::vector<T>& elems): length {elems.size()}, storage {std::make_unique<T[]>(elems.size())} {
@@ -76,16 +77,18 @@ namespace Sigabrt {
                 return length;
             }
             
+            //! \cond NO_DOC
             const std::size_t& size() {
                 return length;
             }
+            //! \endcond
             
             /**
              * \brief Modulus (length) of the vector
              * 
-             * This function returns the modulus (length) of the vector. Alailable for both const and non const objects / references.
+             * This function returns the magnitude (length) of the vector. Alailable for both const and non const objects / references.
              * 
-             * \return: Length of the vector (std::size_t)
+             * \return: The magnitude.
              * */
             double mod() const {
                 T acc {static_cast<T>(0)};
@@ -95,6 +98,20 @@ namespace Sigabrt {
                 return std::sqrt(static_cast<double>(acc));
             }
             
+            //! \cond NO_DOC
+            double mod() {
+                if(magnitude < 0) {
+                    T acc {static_cast<T>(0)};
+                    for (std::size_t i = 0; i < length; i++) {
+                        acc += storage[i]*storage[i];
+                    }
+                    magnitude = std::sqrt(static_cast<double>(acc));
+                    
+                } 
+                return magnitude;
+            }
+            //! \endcond
+            
             /**
              * \brief Scale the vector
              * 
@@ -103,21 +120,13 @@ namespace Sigabrt {
              * 
              * \param scalar: The factor to scale by.
              * 
-             * \return: A reference to this.
+             * \return A reference to this.
              * */
             Vector<T>& scale(const T& scalar) {
                 for (std::size_t i = 0; i < length; i++) {
                     storage[i] *= scalar;
                 }
                 return *this;
-            }
-            
-            double mod() {
-                T acc {static_cast<T>(0)};
-                for (std::size_t i = 0; i < length; i++) {
-                    acc += storage[i]*storage[i];
-                }
-                return std::sqrt(static_cast<double>(acc));
             }
             
             const T& operator[](const std::size_t& index) const {
@@ -149,8 +158,22 @@ namespace Sigabrt {
             T* end() {
                 return &storage[length];
             }
+            
+            template <typename U, typename V> friend Vector<U> operator*(const V& scalar, const Vector<U>& rhs);
+            template <typename U, typename V> friend Vector<U> operator*(const Vector<U>& lhs, const V& scalar);
         };
         
+        /**
+         * \tparam T The vector type.
+         * 
+         * \brief Multiplication operator overload for 2 vectors.
+         * 
+         * This overloads the multiply operator to perform dot product of 2 vectors. You can do double `dotProd {v1*v2}`.
+         * 
+         * \param lhs v1 vector.
+         * 
+         * \param rhs v2 vector.
+         * */
         template <typename T> T operator*(const Vector<T>& lhs, const Vector<T>& rhs) {
             if (lhs.size() != rhs.size()) {
                 throw std::invalid_argument("Cannot compute dot product of vectors with different dimensions.");
@@ -162,6 +185,65 @@ namespace Sigabrt {
             return acc;
         }
         
+        /**
+         * \tparam T The vector type.
+         * 
+         * \brief Multiplication operator overload for a vector with a scalar.
+         * 
+         * This overloads the multiply operator to perform an out of place scaling of a vector. You can do Vector<double> scaled {2*v1}
+         * 
+         * Take note that this returns a new vector. So for scenarios, where you have to update 
+         * a vector like `v1 = 2 * v1` just use `v1.scale(2)` instead. That will scale v1 in place 
+         * and not waste time copying.
+         * 
+         * \param scalar A scalar.
+         * 
+         * \param rhs v1 vector.
+         * */
+        template <typename T, typename U> Vector<T> operator*(const U& scalar, const Vector<T>& rhs) {
+            Vector<T> res {rhs.size()};
+            for (std::size_t i = 0; i < rhs.size(); i++) {
+                res[i] = scalar*rhs[i];
+            }
+            res.magnitude = scalar*rhs.magnitude;
+            return res;
+        }
+        
+        /**
+         * \tparam T The vector type.
+         * 
+         * \brief Multiplication operator overload for a vector with a scalar.
+         * 
+         * This overloads the multiply operator to perform an out of place scaling of a vector. You can do Vector<double> scaled {v1*2}
+         * 
+         * Take note that this returns a new vector. So for scenarios, where you have to update 
+         * a vector like `v1 = v1*2` just use `v1.scale(2)` instead. That will scale v1 in place 
+         * and not waste time copying.
+         * 
+         * \param scalar A scalar.
+         * 
+         * \param lhs v1 vector.
+         * */
+        template <typename T,typename U> Vector<T> operator*(const Vector<T>& lhs, const U& scalar) {
+            Vector<T> res {lhs.size()};
+            for (std::size_t i = 0; i < lhs.size(); i++) {
+                res[i] = scalar*lhs[i];
+            }
+            res.magnitude = scalar*lhs.magnitude;
+            return res;
+        }
+        
+        /**
+         * \tparam T The vector type.
+         * 
+         * \brief Addition operator overload for 2 vectors.
+         * 
+         * This overloads the addition operator to perform sum of 2 vectors. You can do double `Vector<double> sum {v1+v2}`.
+         * 
+         * \param lhs v1 vector.
+         * 
+         * \param rhs v2 vector.
+         * */
         template <typename T> Vector<T> operator+(const Vector<T>& lhs, const Vector<T>& rhs) {
             if (lhs.size() != rhs.size()) {
                 throw std::invalid_argument("Cannot compute dot product of vectors with different dimensions.");
@@ -173,6 +255,17 @@ namespace Sigabrt {
             return retval;
         }
         
+        /**
+         * \tparam T The vector type.
+         * 
+         * \brief Subtraction operator overload for 2 vectors.
+         * 
+         * This overloads the subtraction operator to perform sum of 2 vectors. You can do double `Vector<double> diff {v1-v2}`.
+         * 
+         * \param lhs v1 vector.
+         * 
+         * \param rhs v2 vector.
+         * */
         template <typename T> Vector<T> operator-(const Vector<T>& lhs, const Vector<T>& rhs) {
             if (lhs.size() != rhs.size()) {
                 throw std::invalid_argument("Cannot compute dot product of vectors with different dimensions.");
@@ -180,6 +273,23 @@ namespace Sigabrt {
             Vector<T> retval {lhs.size()};
             for (std::size_t i = 0; i < lhs.size(); i++) {
                 retval[i] = lhs[i] - rhs[i];
+            }
+            return retval;
+        }
+        
+        /**
+         * \tparam T The vector type.
+         * 
+         * \brief Negation operator overload for a vector.
+         * 
+         * This overloads the negation operator to perform sum of 2 vectors. You can do double `Vector<double> neg {-v1}`.
+         * 
+         * \param lhs v1 vector.
+         * */
+        template <typename T> Vector<T> operator-(const Vector<T>& lhs) {
+            Vector<T> retval {lhs.size()};
+            for (std::size_t i = 0; i < lhs.size(); i++) {
+                retval[i] = -lhs[i];
             }
             return retval;
         }

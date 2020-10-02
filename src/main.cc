@@ -1,24 +1,29 @@
 #include <types/models.hpp>
+#include <types/vector.hpp>
 #include <math/rref.hpp>
 #include <types/fraction.hpp>
 #include <benchmark/benchmark.hpp>
 #include <iostream>
 #include <vector>
 #include <iterator>
+#include <type_traits>
 
 using Sigabrt::Types::Fraction;
+using Sigabrt::Types::Vector;
+using Sigabrt::Types::IsScalarType;
 
 int main() {
-    Fraction f1 {1,2};
-    Fraction f2 {1,2};
-    Fraction sum {f1 + 5};
-    Fraction sum2 {f1 + f2};
-    Fraction sum3 {5 + f1};
-    std::cout << sum << "\n";
-    std::cout << sum2 << "\n";
-    std::cout << sum3 << "\n";
+    Vector<int> x {{-4, -2, 7}};
+    Vector<int> y {{6, -1, -10}};
+    Vector<int> z {{3, -2, 0}};
     
-    std::cout << std::boolalpha << (f1 == 0.5) << "\n";
-    std::cout << std::boolalpha << (f1 > f2) << "\n";
-    std::cout << static_cast<double>(f1 * f2) << "\n";
+    int res {3*x*(-2*y -z)};
+    
+    
+    std::cout << res << "\n";
+    
+    std::cout << std::boolalpha << IsScalarType<int>::value << "\n";
+    std::cout << std::boolalpha << IsScalarType<Fraction>::value << "\n";
+    std::cout << std::boolalpha << IsScalarType<Vector<int>>::value << "\n";
+    std::cout << std::boolalpha << std::is_arithmetic<int>::value << "\n";
 }
