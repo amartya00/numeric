@@ -79,9 +79,9 @@ SCENARIO("Vector operations.") {
             
             double mod {v1.mod()};
             
-            THEN("I should get the correct mod.") {
+            THEN("I should get the correct mod (magnitude squared).") {
                 
-                REQUIRE(5 == mod);
+                REQUIRE(25 == mod);
             }
         }
         
@@ -92,7 +92,7 @@ SCENARIO("Vector operations.") {
                 std::vector<double> expected {300, 400};
                 v1.scale(100);
                 REQUIRE(std::equal(v1.begin(), v1.end(), expected.begin()));
-                REQUIRE(500 == v1.mod());
+                REQUIRE(500*500 == v1.mod());
             }
         }
         
@@ -103,7 +103,19 @@ SCENARIO("Vector operations.") {
                 std::vector<double> expected {-3, -4};
                 Vector res {-v1};
                 REQUIRE(std::equal(res.begin(), res.end(), expected.begin()));
-                REQUIRE(5 == v1.mod());
+                REQUIRE(25 == v1.mod());
+            }
+        }
+        
+        WHEN("I equate with other vectors.") {
+            
+            Vector<int> other {{3,4}};
+            Vector<long> another {{3L, 5L}};
+            
+            THEN("The result should be as expected.") {
+                
+                REQUIRE(v1 == other);
+                REQUIRE(v1 != another);
             }
         }
     }

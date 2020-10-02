@@ -3,6 +3,7 @@
 #include <math/rref.hpp>
 #include <types/fraction.hpp>
 #include <benchmark/benchmark.hpp>
+#include <math/vectorspaces.hpp>
 #include <iostream>
 #include <vector>
 #include <iterator>

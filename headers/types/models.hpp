@@ -42,7 +42,8 @@ namespace Sigabrt {
             UNDERDETERMINED_SYSTEM,
             FREE_COLUMNS_RREF,
             INFINITE_SOLUTIONS,
-            NO_SOLUTIONS
+            NO_SOLUTIONS,
+            INCOMPATIBLE_VECTORS
         };
         
         /**

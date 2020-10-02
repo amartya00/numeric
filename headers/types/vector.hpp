@@ -86,7 +86,7 @@ namespace Sigabrt {
             /**
              * \brief Modulus (length) of the vector
              * 
-             * This function returns the magnitude (length) of the vector. Alailable for both const and non const objects / references.
+             * This function returns the magnitude (length) squared of the vector. Alailable for both const and non const objects / references.
              * 
              * \return: The magnitude.
              * */
@@ -95,7 +95,7 @@ namespace Sigabrt {
                 for (std::size_t i = 0; i < length; i++) {
                     acc += storage[i]*storage[i];
                 }
-                return std::sqrt(static_cast<double>(acc));
+                return static_cast<double>(acc);
             }
             
             //! \cond NO_DOC
@@ -105,7 +105,7 @@ namespace Sigabrt {
                     for (std::size_t i = 0; i < length; i++) {
                         acc += storage[i]*storage[i];
                     }
-                    magnitude = std::sqrt(static_cast<double>(acc));
+                    magnitude = static_cast<double>(acc);
                     
                 } 
                 return magnitude;
@@ -168,13 +168,14 @@ namespace Sigabrt {
          * 
          * \brief Multiplication operator overload for 2 vectors.
          * 
-         * This overloads the multiply operator to perform dot product of 2 vectors. You can do double `dotProd {v1*v2}`.
+         * This overloads the multiply operator to perform dot product of 2 vectors. You can do double `dotProd {v1*v2}`. Note 
+         * that the vectors do not have to be of same type as long as they can be multiplied.
          * 
          * \param lhs v1 vector.
          * 
          * \param rhs v2 vector.
          * */
-        template <typename T> T operator*(const Vector<T>& lhs, const Vector<T>& rhs) {
+        template <typename T, typename U> T operator*(const Vector<T>& lhs, const Vector<U>& rhs) {
             if (lhs.size() != rhs.size()) {
                 throw std::invalid_argument("Cannot compute dot product of vectors with different dimensions.");
             }
@@ -260,7 +261,7 @@ namespace Sigabrt {
          * 
          * \brief Subtraction operator overload for 2 vectors.
          * 
-         * This overloads the subtraction operator to perform sum of 2 vectors. You can do double `Vector<double> diff {v1-v2}`.
+         * This overloads the subtraction operator to perform subtraction of 2 vectors. You can do double `Vector<double> diff {v1-v2}`.
          * 
          * \param lhs v1 vector.
          * 
@@ -282,7 +283,7 @@ namespace Sigabrt {
          * 
          * \brief Negation operator overload for a vector.
          * 
-         * This overloads the negation operator to perform sum of 2 vectors. You can do double `Vector<double> neg {-v1}`.
+         * This overloads the negation operator negate vectors. You can do double `Vector<double> neg {-v1}`.
          * 
          * \param lhs v1 vector.
          * */
@@ -293,8 +294,54 @@ namespace Sigabrt {
             }
             return retval;
         }
+        
+        /**
+         * \tparam T One of the vector types.
+         * 
+         * \tparam U The other vector type.
+         * 
+         * \brief Equality operator overload for a vector.
+         * 
+         * This overloads the equality operator to compare of 2 vectors. You can do double `v1 == v2`. Note that the vectors
+         * do not have to be of the same type, as long as the elements can be compared.
+         * 
+         * \param lhs v1 vector.
+         * 
+         * \param rhs v2 vector.
+         * */
+        template <typename T, typename U> bool operator==(const Vector<T>& lhs, const Vector<U>& rhs) {
+            if (lhs.size() == rhs.size()){
+                auto it1 {lhs.begin()};
+                auto it2 {rhs.begin()};
+                for (; it1 < lhs.end(); it1++, it2++) {
+                    if(*it1 != *it2) {
+                        return false;
+                    }
+                }
+                return true;
+            }
+            return false;
+        }
+        
+        /**
+         * \tparam T One of the vector types.
+         * 
+         * \tparam U The other vector type.
+         * 
+         * \brief Inequality operator overload for a vector.
+         * 
+         * This overloads the inequality operator to compare of 2 vectors. You can do double `v1 != v2`. Note that the vectors
+         * do not have to be of the same type, as long as the elements can be compared.
+         * 
+         * \param lhs v1 vector.
+         * 
+         * \param rhs v2 vector.
+         * */
+        template <typename T, typename U> bool operator!=(const Vector<T>& lhs, const Vector<U>& rhs) {
+            return !(lhs == rhs);
+        }
+        
     };
 }
 
 #endif
-
