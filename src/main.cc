@@ -2,8 +2,10 @@
 #include <types/vector.hpp>
 #include <math/rref.hpp>
 #include <types/fraction.hpp>
+#include <types/plane.hpp>
 #include <benchmark/benchmark.hpp>
 #include <math/vectorspaces.hpp>
+
 #include <iostream>
 #include <vector>
 #include <iterator>
@@ -11,20 +13,23 @@
 
 using Sigabrt::Types::Fraction;
 using Sigabrt::Types::Vector;
+using Sigabrt::Types::Plane;
 using Sigabrt::Types::IsScalarType;
+using Sigabrt::Numeric::isNormalToPlane;
 
 int main() {
-    Vector<int> x {{-4, -2, 7}};
-    Vector<int> y {{6, -1, -10}};
-    Vector<int> z {{3, -2, 0}};
+    Plane<double> p1 {3,5,9,-26};
+    Vector<int> v1 {{3,5,9}};
+    Vector<int> v2 {{-3,-5,9}};
+    Vector<int> v3 {{3,-5,-9}};
+    Vector<int> v4 {{-3,-5,-9}};
     
-    int res {3*x*(-2*y -z)};
+    std::cout << std::boolalpha << *isNormalToPlane(p1, v1).val << "\n";
+    std::cout << std::boolalpha << *isNormalToPlane(p1, v2).val << "\n";
+    std::cout << std::boolalpha << *isNormalToPlane(p1, v3).val << "\n";
+    std::cout << std::boolalpha << *isNormalToPlane(p1, v4).val << "\n";
     
-    
-    std::cout << res << "\n";
-    
-    std::cout << std::boolalpha << IsScalarType<int>::value << "\n";
-    std::cout << std::boolalpha << IsScalarType<Fraction>::value << "\n";
-    std::cout << std::boolalpha << IsScalarType<Vector<int>>::value << "\n";
-    std::cout << std::boolalpha << std::is_arithmetic<int>::value << "\n";
+    Plane<double> p2 {Vector<double>{{-4,-3,9}}, Vector<double>{{-5,3,-3}}};
+    auto [a,b,c,k] = p2.getCoefficients();
+    std::cout << a << "x + " << b << "y + " << c << "z = " << k << "\n"; 
 }

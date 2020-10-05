@@ -60,10 +60,23 @@ namespace Sigabrt {
                     storage[i] = *it;
                 }
             }
+            
             Vector(Vector<T>&& other): length {other.length}, storage {std::move(other.storage)} {
                 other.length = 0;
                 other.storage = nullptr;
             }
+            
+            void operator=(Vector<T>&& other){
+                length = other.length;
+                storage = std::move(other.storage); // Assignment will release and reset.
+                other.length = 0;
+                other.storage = nullptr;
+            }
+            
+            // Delete the copy constructor and copy asignment as copying is usually a bad idea
+            Vector(const Vector<T>& other)=delete;
+            void operator=(const Vector<T>& other)=delete;
+            
             
             /**
              * \brief Length of the vector
@@ -341,7 +354,7 @@ namespace Sigabrt {
             return !(lhs == rhs);
         }
         
-    };
+    }
 }
 
 #endif
