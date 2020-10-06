@@ -10,16 +10,20 @@
 #include <types/vector.hpp>
 #include <types/models.hpp>
 #include <types/plane.hpp>
+#include <types/fraction.hpp>
 #include <math/vectorspaces.hpp>
 
+using Sigabrt::Types::Fraction;
 using Sigabrt::Types::Vector;
 using Sigabrt::Types::Plane;
 using Sigabrt::Types::Result;
 using Sigabrt::Types::ErrorCode;
 using Sigabrt::Types::OperationType;
+
 using Sigabrt::Numeric::areLinearlyDependent;
 using Sigabrt::Numeric::cosineAngle;
 using Sigabrt::Numeric::isNormalToPlane;
+using Sigabrt::Numeric::cross;
 
 SCENARIO("Testing linear dependence of vectors.") {
     
@@ -160,6 +164,28 @@ SCENARIO("Testing vectors normal to planes.") {
                         "Only 3 dimenstional vectors can be checked for normalcy with a plane."
                     ).compare(*res1.message) == 0
                 );
+            }
+        }
+    }
+}
+
+SCENARIO("Testing cross products.") {
+
+    GIVEN("I have 2 3 dimensional vectors.") {
+
+        Vector<double> v1 {{6,7,-5}};
+        Vector<Fraction> v2 {{{8,1}, {7,1}, {-11,1}}};
+
+        WHEN("I compute the cross product.") {
+
+            auto result {cross(v1,v2)};
+
+            THEN("The result should be the expected vector.") {
+
+                REQUIRE(3 == (*result.val).size());
+                REQUIRE(-42.0 == (*result.val)[0]);
+                REQUIRE(26.0 == (*result.val)[1]);
+                REQUIRE(-14.0 == (*result.val)[2]);
             }
         }
     }

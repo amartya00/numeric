@@ -70,8 +70,8 @@ namespace Sigabrt {
         private:
             Fraction(const long& _gcd, const long& num, const long& den): num {num/_gcd}, den {den/_gcd} {}
         public:
-            const long num;
-            const long den;
+            long num;
+            long den;
             
             /**
              * \brief Constructor
@@ -86,6 +86,19 @@ namespace Sigabrt {
              * \exception std::invalid_argument thrown when the denominator is specified as 0.
              * */
             Fraction(const long& num, const long& den): Fraction(validateInputsAndReduce(num, den), num, den) {}                
+
+             /**
+             * \brief Default constructor
+             * 
+             * Constructs a fraction with `num`=1 and `den`=1.
+             * 
+             * \param num The numerator.
+             * 
+             * \param den The denominator. This cannot be 0.
+             * 
+             * \exception std::invalid_argument thrown when the denominator is specified as 0.
+             * */
+            Fraction(): num {1L}, den{1L} {}
             
             /**
              * \brief double 
@@ -98,9 +111,11 @@ namespace Sigabrt {
                 return static_cast<double>(num)/static_cast<double>(den);
             }
             
+            //! \cond NO_DOC
             operator double() const {
                 return static_cast<double>(num)/static_cast<double>(den);
             }
+            //! \endcond
         };
         
         
