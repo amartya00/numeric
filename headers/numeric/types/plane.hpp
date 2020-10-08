@@ -4,8 +4,7 @@
 #include <exception>
 #include <tuple>
 
-#include <types/models.hpp>
-#include <types/vector.hpp>
+#include <numeric/types/vector.hpp>
 
 /**
  * \namespace Sigabrt

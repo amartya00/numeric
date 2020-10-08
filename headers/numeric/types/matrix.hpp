@@ -7,8 +7,8 @@
 #include<iostream>
 #include <memory>
 
-#include <types/vector.hpp>
-#include <types/models.hpp>
+#include <numeric/types/vector.hpp>
+#include <numeric/types/models.hpp>
 
 /**
  * \namespace Sigabrt

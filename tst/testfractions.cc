@@ -8,7 +8,7 @@
 #include <random>
 
 #include <catch2/catch.hpp>
-#include <types/fraction.hpp>
+#include <numeric/types/fraction.hpp>
 
 using Sigabrt::Types::Fraction;
 

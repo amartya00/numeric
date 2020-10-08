@@ -8,8 +8,8 @@
 #include <random>
 
 #include <catch2/catch.hpp>
-#include <types/models.hpp>
-#include <benchmark/benchmark.hpp>
+#include <numeric/types/models.hpp>
+#include <numeric/benchmark/benchmark.hpp>
 
 using Sigabrt::Types::RunInfo;
 using Sigabrt::Benchmark::Benchmark;

@@ -1,10 +1,10 @@
-#include <types/models.hpp>
-#include <types/vector.hpp>
-#include <math/rref.hpp>
-#include <types/fraction.hpp>
-#include <types/plane.hpp>
-#include <benchmark/benchmark.hpp>
-#include <math/vectorspaces.hpp>
+#include <numeric/types/models.hpp>
+#include <numeric/types/vector.hpp>
+#include <numeric/math/rref.hpp>
+#include <numeric/types/fraction.hpp>
+#include <numeric/types/plane.hpp>
+#include <numeric/benchmark/benchmark.hpp>
+#include <numeric/math/vectorspaces.hpp>
 
 #include <iostream>
 #include <vector>

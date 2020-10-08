@@ -4,8 +4,8 @@
 #include <optional>
 #include <vector>
 
-#include <types/models.hpp>
-#include <types/matrix.hpp>
+#include <numeric/types/models.hpp>
+#include <numeric/types/matrix.hpp>
 
 /**
  * \namespace Sigabrt

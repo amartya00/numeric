@@ -9,9 +9,9 @@
 #include <tuple>
 
 #include <catch2/catch.hpp>
-#include <types/vector.hpp>
-#include <types/plane.hpp>
-#include <math/vectorspaces.hpp>
+#include <numeric/types/vector.hpp>
+#include <numeric/types/plane.hpp>
+#include <numeric/math/vectorspaces.hpp>
 
 using Sigabrt::Types::Plane;
 using Sigabrt::Types::Vector;

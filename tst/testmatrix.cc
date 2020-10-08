@@ -6,8 +6,8 @@
 #include <iostream>
 
 #include <catch2/catch.hpp>
-#include <types/matrix.hpp>
-#include <types/vector.hpp>
+#include <numeric/types/matrix.hpp>
+#include <numeric/types/vector.hpp>
 
 using Sigabrt::Types::Matrix;
 using Sigabrt::Types::Vector;

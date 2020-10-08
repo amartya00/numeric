@@ -1,9 +1,9 @@
 #define CATCH_CONFIG_MAIN
 
 #include <catch2/catch.hpp>
-#include <types/matrix.hpp>
-#include <types/models.hpp>
-#include <math/rref.hpp>
+#include <numeric/types/matrix.hpp>
+#include <numeric/types/models.hpp>
+#include <numeric/math/rref.hpp>
 
 using Sigabrt::Types::Matrix;
 using Sigabrt::Numeric::gaussJordan;

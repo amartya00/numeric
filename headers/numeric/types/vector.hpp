@@ -8,7 +8,7 @@
 #include <type_traits>
 #include <vector>
 
-#include <types/models.hpp>
+#include <numeric/types/models.hpp>
 
 /**
  * \namespace Sigabrt

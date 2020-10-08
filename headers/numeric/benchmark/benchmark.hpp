@@ -6,7 +6,7 @@
 #include <iostream>
 #include <map>
 
-#include <types/models.hpp>
+#include <numeric/types/models.hpp>
 
 /**
  * \namespace Sigabrt

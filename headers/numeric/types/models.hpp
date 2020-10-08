@@ -7,7 +7,7 @@
 #include <type_traits>
 #include <vector>
 
-#include <types/fraction.hpp>
+#include <numeric/types/fraction.hpp>
 
 /**
  * \namespace Sigabrt

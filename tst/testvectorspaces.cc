@@ -7,11 +7,11 @@
 #include <optional>
 
 #include <catch2/catch.hpp>
-#include <types/vector.hpp>
-#include <types/models.hpp>
-#include <types/plane.hpp>
-#include <types/fraction.hpp>
-#include <math/vectorspaces.hpp>
+#include <numeric/types/vector.hpp>
+#include <numeric/types/models.hpp>
+#include <numeric/types/plane.hpp>
+#include <numeric/types/fraction.hpp>
+#include <numeric/math/vectorspaces.hpp>
 
 using Sigabrt::Types::Fraction;
 using Sigabrt::Types::Vector;

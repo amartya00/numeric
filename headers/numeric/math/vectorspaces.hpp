@@ -2,9 +2,9 @@
 #define __SIGABRT_NUMERIC_VECTORSPACES__
 
 #include <cmath>
-#include <types/vector.hpp>
-#include <types/plane.hpp>
-#include <types/models.hpp>
+#include <numeric/types/vector.hpp>
+#include <numeric/types/plane.hpp>
+#include <numeric/types/models.hpp>
 
 /**
  * \namespace Sigabrt

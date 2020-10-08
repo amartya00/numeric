@@ -6,7 +6,7 @@
 #include <iostream>
 
 #include <catch2/catch.hpp>
-#include <types/vector.hpp>
+#include <numeric/types/vector.hpp>
 
 using Sigabrt::Types::Vector;
 
