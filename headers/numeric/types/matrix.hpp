@@ -394,7 +394,22 @@ namespace Sigabrt {
         
         // Override multiply operator lhs = vector and rhs = matrix.
         template <typename T> Sigabrt::Types::Vector<T> operator*(const Sigabrt::Types::Vector<T>& lhs, const Matrix<T>& rhs) {
-            return rhs*lhs;
+            if (lhs.size() != rhs.getRows()) {
+                throw std::invalid_argument("Incompatible matrix and vector for multiplication.");
+            }
+            
+            Vector<T> retval(rhs.getCols());
+            
+            
+            for (std::size_t i = 0; i < rhs.getCols(); i++) {
+                T sum = static_cast<T>(0);
+                for (std::size_t k = 0; k < rhs.getRows(); k++) {
+                    sum += rhs[k][i] * lhs[k];
+                }
+                retval[i] = sum;
+            }
+            
+            return retval;
         }
         
     }

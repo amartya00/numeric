@@ -3,6 +3,7 @@
 #include <numeric/math/rref.hpp>
 #include <numeric/types/fraction.hpp>
 #include <numeric/types/plane.hpp>
+#include <numeric/types/matrix.hpp>
 #include <numeric/benchmark/benchmark.hpp>
 #include <numeric/math/vectorspaces.hpp>
 
@@ -15,27 +16,22 @@ using Sigabrt::Types::Fraction;
 using Sigabrt::Types::Vector;
 using Sigabrt::Types::Plane;
 using Sigabrt::Types::IsScalarType;
+using Sigabrt::Types::Matrix;
 using Sigabrt::Numeric::isNormalToPlane;
 using Sigabrt::Numeric::cross;
 
 int main() {
-    Plane<double> p1 {3,5,9,-26};
-    Vector<int> v1 {{3,5,9}};
-    Vector<int> v2 {{-3,-5,9}};
-    Vector<int> v3 {{3,-5,-9}};
-    Vector<int> v4 {{-3,-5,-9}};
-    
-    std::cout << std::boolalpha << *isNormalToPlane(p1, v1).val << "\n";
-    std::cout << std::boolalpha << *isNormalToPlane(p1, v2).val << "\n";
-    std::cout << std::boolalpha << *isNormalToPlane(p1, v3).val << "\n";
-    std::cout << std::boolalpha << *isNormalToPlane(p1, v4).val << "\n";
-    
-    Plane<double> p2 {Vector<double>{{-4,-3,9}}, Vector<double>{{-5,3,-3}}};
-    auto [a,b,c,k] = p2.getCoefficients();
-    std::cout << a << "x + " << b << "y + " << c << "z = " << k << "\n"; 
+    Matrix<double> A {{
+        {-4, -5, 6},
+        {8, 3, -4}
+    }};
 
-    Vector<double> v11 {{6,7,-5}};
-    Vector<double> v12 {{8, 7, -11}};
-    Vector<double> v13 {*cross(v11, v12).val};
-    std::cout << v13[0] << "," << v13[1] << "," << v13[2] << "\n";
+    Vector<double> v {{-2, 1}};
+    Vector<double> res {v*A};
+
+    std::cout << "[ ";
+    for (const auto& e : res) {
+        std::cout << e << " ";
+    }
+    std::cout << " ]\n";
 }
