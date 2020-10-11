@@ -33,16 +33,6 @@ namespace Sigabrt {
                 return std::nullopt;
             }
             
-            template<typename T> bool identityRow(const Sigabrt::Types::Slice<T>& row) {
-                const T& first {row[0]};
-                for (const auto& elem : row) {
-                    if (elem != first) {
-                        return false;
-                    }
-                }
-                return true;
-            }
-            
             template<typename T> T roundOffToZero(const T& val, const double& zeroPrecision) {
                 if (static_cast<double>(val) > -zeroPrecision && static_cast<double>(val) < zeroPrecision) {
                     return static_cast<T>(0.0);
@@ -50,6 +40,57 @@ namespace Sigabrt {
                     return val;
                 }
             }
+        }
+        
+        /**
+         * \brief Function to see if a matrix row (slice) is a false identity row.
+         * 
+         * \tparam T Type of elements in the slice.
+         * 
+         * This function determines if a matrix row represents a false identity, that is an equation
+         * of the form 1 = 0. The condition for this to hold is that all elements except the last in the 
+         * slice are 0.
+         * 
+         * \param row The slice.
+         * 
+         * \return bool indicating whether the row is a false ID or not.
+         * */
+        template <typename T> bool falseIndentityRow(const Sigabrt::Types::Slice<T>& row) {
+            const T& rightMost {row[row.size-1]};
+            if (rightMost == 0) {
+                return false;
+            } else {
+                for (std::size_t i = 0; i < row.size-1; i++) {
+                    const T& elem {row[i]};
+                    if (elem != static_cast<T>(0)) {
+                        return false;
+                    }
+                }
+                return true;
+            }
+        }
+        
+        /**
+         * \brief Function to see if a matrix row (slice) is an identity row.
+         * 
+         * \tparam T Type of elements in the slice.
+         * 
+         * This function determines if a matrix row represents an identity, that is an equation
+         * of the form 0=0 or 1=1. The condition for this to hold is that all elements in the slice 
+         * are 0.
+         * 
+         * \param row The slice.
+         * 
+         * \return bool indicating whether the row is a false ID or not.
+         * */
+        template <typename T> bool identityRow(const Sigabrt::Types::Slice<T>& row) {
+            const T& first {row[0]};
+            for (const auto& elem : row) {
+                if (elem != first) {
+                    return false;
+                }
+            }
+            return true;
         }
         
         /**
@@ -195,157 +236,6 @@ namespace Sigabrt {
                     std::nullopt,
                     std::nullopt
                 };
-            }
-            
-        }
-        
-        /**
-         * \brief Function to solve a system of linear equations.
-         * 
-         * This is the Gauss Jordan elimination algorithm to sole a system of linear equations. It takes a non const
-         * matrix (of type `Matrix<T>`) as input. The matrix is expected to be an augmented matrix with proper number
-         * of equations. Under-represented matrix will result in error. 
-         * 
-         * The matrix is reduces to RREF form. It does not return a vector of solutions. The caller is responsible for 
-         * parsing the last column to construct the solution. It however does return a `Result<Unit, ErrorCode>` to 
-         * indicate the status of the computation.
-         * 
-         * The reduction is done in place to avoid copies.
-         * 
-         * \param matrix: 
-         *   Matrix<T> The **non const** reference to the input matrix.
-         * 
-         * \return result: 
-         *   Result<Unit, ErrorCode> Result to indicate the operation status.
-         * 
-         *   Possible error codes:
-         *   - `UNDERDETERMINED_SYSTEM`: If the matrix has less equations than variables in its augmented form.
-         *   - `FREE_COLUMNS_RREF`: If free columns are detected during reduction. This indicates a lack of a unique solution.
-         * 
-         * */
-        template <typename T> Sigabrt::Types::Result<Sigabrt::Types::Unit, Sigabrt::Types::ErrorCode> 
-        gaussJordan(Sigabrt::Types::Matrix<T>& matrix) {
-            // Step 0: Validate matrix in augmented form
-            if (matrix.getRows() < matrix.getCols()-1) {
-                return Sigabrt::Types::Result<Sigabrt::Types::Unit, Sigabrt::Types::ErrorCode> {
-                    Sigabrt::Types::OperationType::ERR,
-                    Sigabrt::Types::Unit::unit,
-                    Sigabrt::Types::ErrorCode::UNDERDETERMINED_SYSTEM,
-                    std::string("The number of equations in the augmented matrix is less than the number of variables.")
-                };
-            }
-            
-            auto retval = rref(matrix);
-            if (retval.type == Sigabrt::Types::OperationType::ERR) {
-                if (retval.error == Sigabrt::Types::ErrorCode::FREE_COLUMNS_RREF) {
-                    for (std::size_t rowNum = 0; rowNum < matrix.getRows(); rowNum++) {
-                        if (identityRow(matrix[matrix.getRows() - rowNum -1])) {
-                            return Sigabrt::Types::Result<Sigabrt::Types::Unit, Sigabrt::Types::ErrorCode> {
-                                Sigabrt::Types::OperationType::ERR,
-                                Sigabrt::Types::Unit::unit,
-                                Sigabrt::Types::ErrorCode::INFINITE_SOLUTIONS,
-                                std::string("This system of equations has infinite solutions.")
-                            };
-                        }
-                    }
-                    return Sigabrt::Types::Result<Sigabrt::Types::Unit, Sigabrt::Types::ErrorCode> {
-                        Sigabrt::Types::OperationType::ERR,
-                        Sigabrt::Types::Unit::unit,
-                        Sigabrt::Types::ErrorCode::NO_SOLUTIONS,
-                        std::string("This system of equations has no solutions.")
-                    };
-                }
-                else {
-                    return Sigabrt::Types::Result<Sigabrt::Types::Unit, Sigabrt::Types::ErrorCode> {
-                        Sigabrt::Types::OperationType::ERR,
-                        Sigabrt::Types::Unit::unit,
-                        Sigabrt::Types::ErrorCode::UNKNOWN_ERROR,
-                        std::nullopt
-                    };
-                }
-                
-            } else {
-                return retval;
-            }
-            
-        }
-        
-        /**
-         * \brief Function to solve a system of linear equations.
-         * 
-         * This is the Gauss Jordan elimination algorithm to sole a system of linear equations. It takes a non const
-         * matrix (of type `Matrix<T>`) as input. The matrix is expected to be an augmented matrix with proper number
-         * of equations. Under-represented matrix will result in error. 
-         * 
-         * The matrix is reduces to RREF form. It does not return a vector of solutions. The caller is responsible for 
-         * parsing the last column to construct the solution. It however does return a `Result<Unit, ErrorCode>` to 
-         * indicate the status of the computation.
-         * 
-         * The reduction is done in place to avoid copies.
-         * 
-         * During computation, this function handles precision errors by rounding off very small numbers (with an absolute 
-         * value less than the `zeroPrecision` parameter), to zero.
-         * 
-         * NOTE: In this version of the function, if you are using a non primitive type, it has to support conversion to double.
-         * 
-         * \param matrix: 
-         *   Matrix<T> The **non const** reference to the input matrix.
-         * 
-         * \param zeroPrecision:
-         *   The double value which is considered to be the threshold to be 0. Example if this is set to 1e-10, all numbers
-         *   between -(1e-10 ) and 1e-10 will be considered 0.
-         * 
-         * \return result: 
-         *   Result<Unit, ErrorCode> Result to indicate the operation status.
-         * 
-         *   Possible error codes:
-         *   - `UNDERDETERMINED_SYSTEM`: If the matrix has less equations than variables in its augmented form.
-         *   - `FREE_COLUMNS_RREF`: If free columns are detected during reduction. This indicates a lack of a unique solution.
-         * 
-         * */
-        template <typename T> Sigabrt::Types::Result<Sigabrt::Types::Unit, Sigabrt::Types::ErrorCode> 
-        gaussJordan(Sigabrt::Types::Matrix<T>& matrix, const double& zeroPrecision) {
-            // Step 0: Validate matrix in augmented form
-            if (matrix.getRows() < matrix.getCols()-1) {
-                return Sigabrt::Types::Result<Sigabrt::Types::Unit, Sigabrt::Types::ErrorCode> {
-                    Sigabrt::Types::OperationType::ERR,
-                    Sigabrt::Types::Unit::unit,
-                    Sigabrt::Types::ErrorCode::UNDERDETERMINED_SYSTEM,
-                    std::string("The number of equations in the augmented matrix is less than the number of variables.")
-                };
-            }
-            
-            auto retval = rref(matrix, zeroPrecision);
-            if (retval.type == Sigabrt::Types::OperationType::ERR) {
-                if (retval.error == Sigabrt::Types::ErrorCode::FREE_COLUMNS_RREF) {
-                    for (std::size_t rowNum = 0; rowNum < matrix.getRows(); rowNum++) {
-                        if (identityRow(matrix[matrix.getRows() - rowNum -1])) {
-                            return Sigabrt::Types::Result<Sigabrt::Types::Unit, Sigabrt::Types::ErrorCode> {
-                                Sigabrt::Types::OperationType::ERR,
-                                Sigabrt::Types::Unit::unit,
-                                Sigabrt::Types::ErrorCode::INFINITE_SOLUTIONS,
-                                std::string("This system of equations has infinite solutions.")
-                            };
-                        }
-                    }
-                    return Sigabrt::Types::Result<Sigabrt::Types::Unit, Sigabrt::Types::ErrorCode> {
-                        Sigabrt::Types::OperationType::ERR,
-                        Sigabrt::Types::Unit::unit,
-                        Sigabrt::Types::ErrorCode::NO_SOLUTIONS,
-                        std::string("This system of equations has no solutions.")
-                    };
-                }
-                else {
-                    return Sigabrt::Types::Result<Sigabrt::Types::Unit, Sigabrt::Types::ErrorCode> {
-                        Sigabrt::Types::OperationType::ERR,
-                        Sigabrt::Types::Unit::unit,
-                        Sigabrt::Types::ErrorCode::UNKNOWN_ERROR,
-                        std::nullopt
-                    };
-                }
-                
-            } else {
-                return retval;
             }
             
         }

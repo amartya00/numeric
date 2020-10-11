@@ -2,9 +2,16 @@
 #define __SIGABRT_NUMERIC_VECTORSPACES__
 
 #include <cmath>
+#include <functional>
+#include <vector>
+
 #include <numeric/types/vector.hpp>
 #include <numeric/types/plane.hpp>
 #include <numeric/types/models.hpp>
+#include <numeric/types/matrix.hpp>
+
+#include <numeric/math/rref.hpp>
+
 
 /**
  * \namespace Sigabrt
@@ -190,6 +197,103 @@ namespace Sigabrt {
                 std::string("Can compute cross product of only 3 dimensional vectors.")
             };
         }
+        
+        
+        /**
+         * \brief Function to test linear indenendence of a ser of vectors.
+         * 
+         * \tparam T the type of the vectors.
+         * 
+         * This function takes a list of `Sigabrt::Types::Vector`s and tests them for linear independence, using matrix null 
+         * space methodology. The function returns an instance of `Sigabrt::Types::Result<bool, Sigabrt::Types::ErrorCode>` 
+         * 
+         * The result is true when the vectors ARE independent, otherwise false.
+         * 
+         * The result is an error if:
+         *   - The vectors are of different dimensions. (ErrorCode = `Sigabrt::Types::INCOMPATIBLE_VECTORS`)
+         *   - If some other error happend (ErrorCode = `Sigabrt::Types::UNKNOWN_ERROR`)
+         * 
+         * \param vectors A `std::vector` of `Sigabrt::Types::vector<T>`s
+         * 
+         * \return Sigabrt::Types::Result<bool, Sigabrt::Types::ErrorCode>
+         * 
+         **/    
+        template <typename T> Sigabrt::Types::Result<bool, Sigabrt::Types::ErrorCode> 
+        linearIndependenceOfSystem(const std::vector<std::reference_wrapper<Sigabrt::Types::Vector<T>>>& vectors) {
+            // Linear independence of just one vector does not make any sense
+            if (vectors.size() == 1) {
+                return Sigabrt::Types::Result<bool, Sigabrt::Types::ErrorCode> {
+                    Sigabrt::Types::OperationType::ERR,
+                    std::nullopt,
+                    Sigabrt::Types::ErrorCode::UNDERDETERMINED_SYSTEM,
+                    std::string("You cannot determine linear independence of only 1 vector unless you are high.")
+                };
+            }
+            
+            // If all vectors do not have same dimensions, return an error.
+            std::size_t len {vectors[0].get().size()};
+            for (const auto& v : vectors) {
+                if (v.get().size() != len) {
+                    return Sigabrt::Types::Result<bool, Sigabrt::Types::ErrorCode> {
+                        Sigabrt::Types::OperationType::ERR,
+                        std::nullopt,
+                        Sigabrt::Types::ErrorCode::INCOMPATIBLE_VECTORS,
+                        std::string("Cannot compare linear independence of vectors of unequal dimensions.")
+                    };
+                }
+            }
+            
+            // If the matrix is "narrower", it cannot be linearly independent.
+            if (vectors.size() > len) {
+                return Sigabrt::Types::Result<bool, Sigabrt::Types::ErrorCode> {
+                    Sigabrt::Types::OperationType::OK,
+                    false,
+                    std::nullopt,
+                    std::nullopt
+                };
+            }
+            
+            // Initialize the matrix
+            Sigabrt::Types::Matrix<T> mat {vectors.size(), len+1};
+            for (std::size_t i = 0; i < vectors.size(); i++) {
+                for(std::size_t j = 0; j < len; j++) {
+                    mat[i][j] = vectors[i].get()[j];
+                }
+                mat[i][len] = static_cast<T>(0);
+            }
+            
+            // Run it through RREF
+            Sigabrt::Types::Result<Sigabrt::Types::Unit, Sigabrt::Types::ErrorCode> res {Sigabrt::Numeric::rref(mat)};
+            if (res.type == Sigabrt::Types::OperationType::ERR) {
+                if(*res.error == Sigabrt::Types::ErrorCode::FREE_COLUMNS_RREF) {
+                    // A homogenous system cannot have no solutions. It's either 1 or infinite.
+                    // Presence of free variables indicate many solutions, which in turn indicates
+                    // linear dependence.
+                    return Sigabrt::Types::Result<bool, Sigabrt::Types::ErrorCode> {
+                        Sigabrt::Types::OperationType::OK,
+                        false,
+                        std::nullopt,
+                        std::nullopt
+                    };
+                } else {
+                    return Sigabrt::Types::Result<bool, Sigabrt::Types::ErrorCode> {
+                        Sigabrt::Types::OperationType::ERR,
+                        std::nullopt,
+                        Sigabrt::Types::ErrorCode::UNKNOWN_ERROR,
+                        std::string("Unknown error occured while trying to compute linear independence of the set of vectors.")
+                    }; 
+                }
+            } else {
+                // No free variables indicates a unique solution which would be V = 0
+                return Sigabrt::Types::Result<bool, Sigabrt::Types::ErrorCode> {
+                    Sigabrt::Types::OperationType::OK,
+                    true,
+                    std::nullopt,
+                    std::nullopt
+                };
+            }
+        }
+        
     }
 }
 

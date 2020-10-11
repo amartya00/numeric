@@ -518,7 +518,7 @@ SCENARIO("Multi matrix operations.") {
                 {1,1,1,1}
             }
         };
-        Vector<double> v1 {{1,1,1,1}};
+        Vector<double> v1 {{1,1,1}};
         
         WHEN("I multiply the 2") {
             
@@ -526,9 +526,9 @@ SCENARIO("Multi matrix operations.") {
             
             THEN("The result shoule be expected.") {
                 
-                std::vector<double> expected {4,4,4};
+                std::vector<double> expected {3,3,3,3};
                 
-                REQUIRE(3 == result.size());
+                REQUIRE(4 == result.size());
                 REQUIRE(std::equal(expected.begin(), expected.end(), result.begin()));
             }
         }
