@@ -83,14 +83,6 @@ SCENARIO("Gauss Jordan elimination.") {
             Result<Unit, ErrorCode> result = gaussJordan(testInput);
             
             THEN("I should get back an error in the result.") {
-                std::cout << *result.message << "\n";
-                for (const auto& row: testInput) {
-                    for (const auto& elem: row) {
-                        std::cout << elem << " ";
-                    }
-                    std::cout << "\n";
-                }
-                
                 
                 REQUIRE(OperationType::ERR == result.type);
                 REQUIRE(ErrorCode::NO_SOLUTIONS == *result.error);
