@@ -112,7 +112,8 @@ namespace Sigabrt {
         template <typename T> Sigabrt::Types::Result<Sigabrt::Types::Unit, Sigabrt::Types::ErrorCode> 
         rref(Sigabrt::Types::Matrix<T>& matrix) {
             bool freeElements {false};
-            for (std::size_t i = 0; i < matrix.getRows(); i++) {
+            std::size_t smallerDim {matrix.getRows() < matrix.getCols()? matrix.getRows(): matrix.getCols()};
+            for (std::size_t i = 0; i < smallerDim; i++) {
                 // If pivot element is zero, we need to make it non zero
                 if (matrix[i][i] == static_cast<T>(0)) {
                     std::optional<T> nextPivot = findNextPivot(matrix, i, i);
@@ -186,7 +187,8 @@ namespace Sigabrt {
         template <typename T> Sigabrt::Types::Result<Sigabrt::Types::Unit, Sigabrt::Types::ErrorCode> 
         rref(Sigabrt::Types::Matrix<T>& matrix, const double& zeroPrecision) {
             bool freeElements {false};
-            for (std::size_t i = 0; i < matrix.getRows(); i++) {
+            std::size_t smallerDim {matrix.getRows() < matrix.getCols()? matrix.getRows(): matrix.getCols()};
+            for (std::size_t i = 0; i < smallerDim; i++) {
                 // If pivot element is zero, we need to make it non zero
                 if (matrix[i][i] == static_cast<T>(0)) {
                     std::optional<T> nextPivot = findNextPivot(matrix, i, i);

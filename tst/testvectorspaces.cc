@@ -231,6 +231,7 @@ SCENARIO("Test linear independence of a set of vectors.") {
             }
         }
         
+        
         WHEN("I test linear independence of 3 non-independent ones.") {
             
             std::vector<std::reference_wrapper<Vector<double>>> input {v1, v2, v4};

@@ -17,21 +17,35 @@ using Sigabrt::Types::Vector;
 using Sigabrt::Types::Plane;
 using Sigabrt::Types::IsScalarType;
 using Sigabrt::Types::Matrix;
+using Sigabrt::Types::Result;
+using Sigabrt::Types::ErrorCode;
+using Sigabrt::Types::OperationType;
+using Sigabrt::Types::Unit;
 using Sigabrt::Numeric::isNormalToPlane;
 using Sigabrt::Numeric::cross;
+using Sigabrt::Numeric::rref;
+
+void display(const Matrix<double>& m) {
+    for (const auto& row: m) {
+        for (const auto& elem: row) {
+            std::cout << elem << " ";
+        }
+        std::cout << "\n";
+    }
+}
 
 int main() {
-    Matrix<double> A {{
-        {-4, -5, 6},
-        {8, 3, -4}
+    Matrix<double> matrix {{
+        {1,2},
+        {7,14},
+        {11,22}
     }};
-
-    Vector<double> v {{-2, 1}};
-    Vector<double> res {v*A};
-
-    std::cout << "[ ";
-    for (const auto& e : res) {
-        std::cout << e << " ";
+    Result<Unit, ErrorCode> res {rref(matrix)};
+    display(matrix);
+    auto resType {res.type};
+    if (resType == OperationType::OK) {
+        std::cout << "OK\n";
+    } else {
+        std::cout << "Not OK\n";
     }
-    std::cout << " ]\n";
 }

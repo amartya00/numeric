@@ -243,7 +243,7 @@ namespace Sigabrt {
                 }
             }
             
-            // If the matrix is "narrower", it cannot be linearly independent.
+            // If the matrix is "wider", it cannot be linearly independent.
             if (vectors.size() > len) {
                 return Sigabrt::Types::Result<bool, Sigabrt::Types::ErrorCode> {
                     Sigabrt::Types::OperationType::OK,
@@ -254,16 +254,16 @@ namespace Sigabrt {
             }
             
             // Initialize the matrix
-            Sigabrt::Types::Matrix<T> mat {vectors.size(), len+1};
-            for (std::size_t i = 0; i < vectors.size(); i++) {
-                for(std::size_t j = 0; j < len; j++) {
-                    mat[i][j] = vectors[i].get()[j];
+            Sigabrt::Types::Matrix<T> mat {len, vectors.size()};
+            for (std::size_t i = 0; i < len; i++) {
+                for(std::size_t j = 0; j < vectors.size(); j++) {
+                    mat[i][j] = vectors[j].get()[i];
                 }
-                mat[i][len] = static_cast<T>(0);
             }
             
             // Run it through RREF
             Sigabrt::Types::Result<Sigabrt::Types::Unit, Sigabrt::Types::ErrorCode> res {Sigabrt::Numeric::rref(mat)};
+
             if (res.type == Sigabrt::Types::OperationType::ERR) {
                 if(*res.error == Sigabrt::Types::ErrorCode::FREE_COLUMNS_RREF) {
                     // A homogenous system cannot have no solutions. It's either 1 or infinite.
