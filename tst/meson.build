@@ -7,6 +7,9 @@ vectortest = executable('vectortest', 'testvector.cc',
 rreftest = executable('rreftest', 'testrref.cc',
                     include_directories : inc)
                     
+gaussjordantest = executable('gaussjordantest', 'testgauss.cc',
+                    include_directories : inc)
+                    
 benchmarktest = executable('benchmarktest', 'testbenchmark.cc',
                     include_directories : inc)
                     

@@ -4,10 +4,9 @@
 #include <numeric/types/matrix.hpp>
 #include <numeric/types/models.hpp>
 #include <numeric/math/rref.hpp>
-#include <numeric/math/gaussjordan.hpp>
 
 using Sigabrt::Types::Matrix;
-using Sigabrt::Numeric::gaussJordan;
+using Sigabrt::Numeric::rref;
 using Sigabrt::Types::Slice;
 using Sigabrt::Types::Result;
 using Sigabrt::Types::Unit;
@@ -41,9 +40,9 @@ void roundOffMatrix(Matrix<double>& matrix) {
     }
 }
 
-SCENARIO("Gauss Jordan elimination.") {
+SCENARIO("RREF algorithm.") {
     
-    GIVEN("I have a augmented matrix which I know can be solved.") {
+    GIVEN("I have 'wide' matrix.") {
         Matrix<double> testInput {
             {
                 {11.0, 22.0, 17.0, 100.0},
@@ -52,131 +51,62 @@ SCENARIO("Gauss Jordan elimination.") {
             }  
         };
         
-        WHEN("I run it through gauss jordan algorithm.") {
+        WHEN("I run it through gauss rref algorithm.") {
             
-            Result<Unit, ErrorCode> result = gaussJordan(testInput);
+            Result<Unit, ErrorCode> result = rref(testInput);
             roundOffMatrix(testInput);
             
-            REQUIRE(OperationType::OK == result.type);
-            REQUIRE(Unit::unit == *result.val);
-            REQUIRE(std::nullopt == result.error);
-            REQUIRE(std::nullopt == result.message);
-            
-            REQUIRE(4.80 == testInput[0][3]);
-            REQUIRE(-4.88 == testInput[1][3]);
-            REQUIRE(9.09 == testInput[2][3]);
-        }
-    }
-    
-    GIVEN("I have a matrix that I know has no solutions.") {
-        Matrix<double> testInput {
-            {
-                {11, 22, 17, 100, 100},
-                {11, 22, 99, 123, 145},
-                {1,  2, 36,  45, 123},
-                {2,  4, 63,  98, 1413}
-            }
-        };
-        
-        WHEN("I run it through gauss jordan algorithm.") {
-            
-            Result<Unit, ErrorCode> result = gaussJordan(testInput);
-            
-            THEN("I should get back an error in the result.") {
+            THEN("The result should be as expected."){
                 
-                REQUIRE(OperationType::ERR == result.type);
-                REQUIRE(ErrorCode::NO_SOLUTIONS == *result.error);
+                REQUIRE(OperationType::OK == result.type);
                 REQUIRE(Unit::unit == *result.val);
-                REQUIRE(
-                    std::string(
-                        "This system of equations has no solutions."
-                    ).compare(*result.message) == 0
-                );
+                REQUIRE(std::nullopt == result.error);
+                REQUIRE(std::nullopt == result.message);
+                
+                REQUIRE(isEqual(
+                    testInput,
+                    {
+                        {1.0, 0.0, 0.0,  4.80},
+                        {0.0, 1.0, 0.0, -4.88},
+                        {0.0, 0.0, 1.0,  9.09}
+                    }
+                    
+                ));                    
             }
         }
     }
     
-    GIVEN("I have a matrix that I know has infinite solutions.") {
-        Matrix<double> testInput {
-            {
-                {11, 22, 17, 100, 100},
-                {13, 22, 99, 123, 145},
-                {11, 22, 17, 100, 100},
-                {2,  4, 63,  98, 1413}
-            }
-        };
+    GIVEN("I have a 'narrow' matrix.") {
         
-        WHEN("I run it through gauss jordan algorithm.") {
-            
-            Result<Unit, ErrorCode> result = gaussJordan(testInput);
-            
-            THEN("I should get back an error in the result.") {
-                
-                REQUIRE(OperationType::ERR == result.type);
-                REQUIRE(ErrorCode::INFINITE_SOLUTIONS == *result.error);
-                REQUIRE(Unit::unit == *result.val);
-                REQUIRE(
-                    std::string(
-                        "This system of equations has infinite solutions."
-                    ).compare(*result.message) == 0
-                );
-            }
-        }
-    }
-    
-    GIVEN("I have a matrix that I know has infinite solutions.") {
-        Matrix<double> testInput {
-            {
-                {9, 22, 17, 100, 11},
-                {13, 22, 99, 123, 145},
-                {9, 22, 17, 100, 11},
-                {2,  4, 63,  98, 1413}
-            }
-        };
+        Matrix<double> testInput {{
+            {1,10},
+            {2,17},
+            {5,11}
+        }};
         
-        WHEN("I run it through gauss jordan algorithm with rounding off.") {
+        WHEN("I run it through a rref algorithm.") {
             
-            Result<Unit, ErrorCode> result = gaussJordan(testInput, 1e-10);
+            Result<Unit, ErrorCode> result {rref(testInput)};
             
-            THEN("I should get back an error in the result.") {
+            THEN("The result shoule be as expected.") {
                 
-                REQUIRE(OperationType::ERR == result.type);
-                REQUIRE(ErrorCode::INFINITE_SOLUTIONS == *result.error);
+                REQUIRE(OperationType::OK == result.type);
                 REQUIRE(Unit::unit == *result.val);
-                REQUIRE(
-                    std::string(
-                        "This system of equations has infinite solutions."
-                    ).compare(*result.message) == 0
-                );
-            }
-        }
-    }
-    
-    GIVEN("I have a under represented system.") {
-        Matrix<double> testInput {
-            {
-                {11, 22, 17, 100, 100},
-                {11, 22, 99, 123, 145},
-                {1,  2, 36,  45, 123}
-            }
-        };
-        
-        WHEN("I run it through gauss jordan algorithm.") {
-            
-            Result<Unit, ErrorCode> result = gaussJordan(testInput);
-            
-            THEN("I should get back an error in the result.") {
+                REQUIRE(std::nullopt == result.error);
+                REQUIRE(std::nullopt == result.message);
                 
-                REQUIRE(OperationType::ERR == result.type);
-                REQUIRE(ErrorCode::UNDERDETERMINED_SYSTEM == *result.error);
-                REQUIRE(Unit::unit == *result.val);
-                REQUIRE(
-                    std::string(
-                        "The number of equations in the augmented matrix is less than the number of variables."
-                    ).compare(*result.message) == 0
-                );
+                REQUIRE(isEqual(
+                    testInput,
+                    {
+                        {1.0, 0.0},
+                        {0.0, 1.0},
+                        {0.0, 0.0}
+                    }
+                    
+                ));
             }
         }
     }
 }
+
 
