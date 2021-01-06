@@ -6,6 +6,7 @@
 #include <numeric/types/matrix.hpp>
 #include <numeric/benchmark/benchmark.hpp>
 #include <numeric/math/vectorspaces.hpp>
+#include <numeric/math/errors.hpp>
 
 #include <iostream>
 #include <vector>
@@ -18,7 +19,7 @@ using Sigabrt::Types::Plane;
 using Sigabrt::Types::IsScalarType;
 using Sigabrt::Types::Matrix;
 using Sigabrt::Types::Result;
-using Sigabrt::Types::ErrorCode;
+using Sigabrt::Numeric::ErrorCode;
 using Sigabrt::Types::OperationType;
 using Sigabrt::Types::Unit;
 using Sigabrt::Numeric::isNormalToPlane;

@@ -5,13 +5,14 @@
 #include <numeric/types/models.hpp>
 #include <numeric/math/rref.hpp>
 #include <numeric/math/gaussjordan.hpp>
+#include <numeric/math/errors.hpp>
 
 using Sigabrt::Types::Matrix;
 using Sigabrt::Numeric::gaussJordan;
 using Sigabrt::Types::Slice;
 using Sigabrt::Types::Result;
 using Sigabrt::Types::Unit;
-using Sigabrt::Types::ErrorCode;
+using Sigabrt::Numeric::ErrorCode;
 using Sigabrt::Types::OperationType;
 
 template <typename T> bool isEqual(const Matrix<T>& matrix, const std::vector<std::vector<T>>& vecs) {

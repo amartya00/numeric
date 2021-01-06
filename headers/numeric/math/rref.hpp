@@ -6,6 +6,7 @@
 
 #include <numeric/types/models.hpp>
 #include <numeric/types/matrix.hpp>
+#include <numeric/math/errors.hpp>
 
 /**
  * \namespace Sigabrt
@@ -109,7 +110,7 @@ namespace Sigabrt {
          *   Possible error codes:
          *   - `FREE_COLUMNS_RREF`: If free columns are detected during reduction. This indicates a lack of a unique solution.
          * */
-        template <typename T> Sigabrt::Types::Result<Sigabrt::Types::Unit, Sigabrt::Types::ErrorCode> 
+        template <typename T> Sigabrt::Types::Result<Sigabrt::Types::Unit, Sigabrt::Numeric::ErrorCode> 
         rref(Sigabrt::Types::Matrix<T>& matrix) {
             bool freeElements {false};
             std::size_t smallerDim {matrix.getRows() < matrix.getCols()? matrix.getRows(): matrix.getCols()};
@@ -142,14 +143,14 @@ namespace Sigabrt {
             }
             
             if (freeElements) {
-                return Sigabrt::Types::Result<Sigabrt::Types::Unit, Sigabrt::Types::ErrorCode> {
+                return Sigabrt::Types::Result<Sigabrt::Types::Unit, Sigabrt::Numeric::ErrorCode> {
                     Sigabrt::Types::OperationType::ERR,
                     Sigabrt::Types::Unit::unit,
-                    Sigabrt::Types::ErrorCode::FREE_COLUMNS_RREF,
+                    Sigabrt::Numeric::ErrorCode::FREE_COLUMNS_RREF,
                     std::nullopt
                 };
             } else {
-                return Sigabrt::Types::Result<Sigabrt::Types::Unit, Sigabrt::Types::ErrorCode> {
+                return Sigabrt::Types::Result<Sigabrt::Types::Unit, Sigabrt::Numeric::ErrorCode> {
                     Sigabrt::Types::OperationType::OK,
                     Sigabrt::Types::Unit::unit,
                     std::nullopt,
@@ -184,7 +185,7 @@ namespace Sigabrt {
          *   Possible error codes:
          *   - `FREE_COLUMNS_RREF`: If free columns are detected during reduction. This indicates a lack of a unique solution.
          * */
-        template <typename T> Sigabrt::Types::Result<Sigabrt::Types::Unit, Sigabrt::Types::ErrorCode> 
+        template <typename T> Sigabrt::Types::Result<Sigabrt::Types::Unit, Sigabrt::Numeric::ErrorCode> 
         rref(Sigabrt::Types::Matrix<T>& matrix, const double& zeroPrecision) {
             bool freeElements {false};
             std::size_t smallerDim {matrix.getRows() < matrix.getCols()? matrix.getRows(): matrix.getCols()};
@@ -225,14 +226,14 @@ namespace Sigabrt {
             }
             
             if (freeElements) {
-                return Sigabrt::Types::Result<Sigabrt::Types::Unit, Sigabrt::Types::ErrorCode> {
+                return Sigabrt::Types::Result<Sigabrt::Types::Unit, Sigabrt::Numeric::ErrorCode> {
                     Sigabrt::Types::OperationType::ERR,
                     Sigabrt::Types::Unit::unit,
-                    Sigabrt::Types::ErrorCode::FREE_COLUMNS_RREF,
+                    Sigabrt::Numeric::ErrorCode::FREE_COLUMNS_RREF,
                     std::nullopt
                 };
             } else {
-                return Sigabrt::Types::Result<Sigabrt::Types::Unit, Sigabrt::Types::ErrorCode> {
+                return Sigabrt::Types::Result<Sigabrt::Types::Unit, Sigabrt::Numeric::ErrorCode> {
                     Sigabrt::Types::OperationType::OK,
                     Sigabrt::Types::Unit::unit,
                     std::nullopt,

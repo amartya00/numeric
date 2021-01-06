@@ -13,12 +13,13 @@
 #include <numeric/types/plane.hpp>
 #include <numeric/types/fraction.hpp>
 #include <numeric/math/vectorspaces.hpp>
+#include <numeric/math/errors.hpp>
 
 using Sigabrt::Types::Fraction;
 using Sigabrt::Types::Vector;
 using Sigabrt::Types::Plane;
 using Sigabrt::Types::Result;
-using Sigabrt::Types::ErrorCode;
+using Sigabrt::Numeric::ErrorCode;
 using Sigabrt::Types::OperationType;
 
 using Sigabrt::Numeric::areLinearlyDependent;
