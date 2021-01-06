@@ -19,6 +19,9 @@ To build and test this library, do the following:
   - `meson ..`
   - `ninja test`
   
+To install, run the above commands and run
+  - `ninja install`
+  
 To build documentation:
   - clone: `git clone https://github.com/amartya00/numeric.git`
   - `cd numeric`
