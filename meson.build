@@ -1,7 +1,7 @@
 project(
   'numeric.sigabrt.io',
   'cpp',
-  version : '0.0.1',
+  version : '0.0.2',
   license : 'GPLV2',
   default_options:[
     'warning_level=3'
