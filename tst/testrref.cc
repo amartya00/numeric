@@ -6,13 +6,15 @@
 #include <numeric/math/rref.hpp>
 #include <numeric/math/errors.hpp>
 
-using Sigabrt::Types::Matrix;
-using Sigabrt::Numeric::rref;
-using Sigabrt::Types::Slice;
-using Sigabrt::Types::Result;
-using Sigabrt::Types::Unit;
-using Sigabrt::Numeric::ErrorCode;
-using Sigabrt::Types::OperationType;
+#include <thesoup/types/types.hpp>
+
+using numeric::types::Matrix;
+using numeric::functions::rref;
+using thesoup::types::Slice;
+using thesoup::types::Result;
+using thesoup::types::Unit;
+using numeric::ErrorCode;
+
 
 template <typename T> bool isEqual(const Matrix<T>& matrix, const std::vector<std::vector<T>>& vecs) {
     if (matrix.getRows() != vecs.size()) {
@@ -57,12 +59,9 @@ SCENARIO("RREF algorithm.") {
             Result<Unit, ErrorCode> result = rref(testInput);
             roundOffMatrix(testInput);
             
-            THEN("The result should be as expected."){
+            THEN("The result should be as expected.") {
                 
-                REQUIRE(OperationType::OK == result.type);
-                REQUIRE(Unit::unit == *result.val);
-                REQUIRE(std::nullopt == result.error);
-                REQUIRE(std::nullopt == result.message);
+                REQUIRE(result);
                 
                 REQUIRE(isEqual(
                     testInput,
@@ -91,10 +90,7 @@ SCENARIO("RREF algorithm.") {
             
             THEN("The result shoule be as expected.") {
                 
-                REQUIRE(OperationType::OK == result.type);
-                REQUIRE(Unit::unit == *result.val);
-                REQUIRE(std::nullopt == result.error);
-                REQUIRE(std::nullopt == result.message);
+                REQUIRE(result);
                 
                 REQUIRE(isEqual(
                     testInput,

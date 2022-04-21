@@ -7,13 +7,13 @@
 #include <numeric/math/gaussjordan.hpp>
 #include <numeric/math/errors.hpp>
 
-using Sigabrt::Types::Matrix;
-using Sigabrt::Numeric::gaussJordan;
-using Sigabrt::Types::Slice;
-using Sigabrt::Types::Result;
-using Sigabrt::Types::Unit;
-using Sigabrt::Numeric::ErrorCode;
-using Sigabrt::Types::OperationType;
+using numeric::types::Matrix;
+using numeric::functions::gauss_jordan;
+using thesoup::types::Slice;
+using thesoup::types::Result;
+using thesoup::types::Unit;
+using numeric::ErrorCode;
+
 
 template <typename T> bool isEqual(const Matrix<T>& matrix, const std::vector<std::vector<T>>& vecs) {
     if (matrix.getRows() != vecs.size()) {
@@ -55,13 +55,11 @@ SCENARIO("Gauss Jordan elimination.") {
         
         WHEN("I run it through gauss jordan algorithm.") {
             
-            Result<Unit, ErrorCode> result = gaussJordan(testInput);
+            Result<Unit, ErrorCode> result = gauss_jordan(testInput);
             roundOffMatrix(testInput);
             
-            REQUIRE(OperationType::OK == result.type);
-            REQUIRE(Unit::unit == *result.val);
-            REQUIRE(std::nullopt == result.error);
-            REQUIRE(std::nullopt == result.message);
+            REQUIRE(result);
+            REQUIRE(Unit::unit == result.unwrap());
             
             REQUIRE(4.80 == testInput[0][3]);
             REQUIRE(-4.88 == testInput[1][3]);
@@ -81,18 +79,12 @@ SCENARIO("Gauss Jordan elimination.") {
         
         WHEN("I run it through gauss jordan algorithm.") {
             
-            Result<Unit, ErrorCode> result = gaussJordan(testInput);
+            Result<Unit, ErrorCode> result = gauss_jordan(testInput);
             
             THEN("I should get back an error in the result.") {
                 
-                REQUIRE(OperationType::ERR == result.type);
-                REQUIRE(ErrorCode::NO_SOLUTIONS == *result.error);
-                REQUIRE(Unit::unit == *result.val);
-                REQUIRE(
-                    std::string(
-                        "This system of equations has no solutions."
-                    ).compare(*result.message) == 0
-                );
+                REQUIRE_FALSE(result);
+                REQUIRE(ErrorCode::NO_SOLUTIONS == result.error());
             }
         }
     }
@@ -109,18 +101,12 @@ SCENARIO("Gauss Jordan elimination.") {
         
         WHEN("I run it through gauss jordan algorithm.") {
             
-            Result<Unit, ErrorCode> result = gaussJordan(testInput);
+            Result<Unit, ErrorCode> result = gauss_jordan(testInput);
             
             THEN("I should get back an error in the result.") {
                 
-                REQUIRE(OperationType::ERR == result.type);
-                REQUIRE(ErrorCode::INFINITE_SOLUTIONS == *result.error);
-                REQUIRE(Unit::unit == *result.val);
-                REQUIRE(
-                    std::string(
-                        "This system of equations has infinite solutions."
-                    ).compare(*result.message) == 0
-                );
+                REQUIRE_FALSE(result);
+                REQUIRE(ErrorCode::INFINITE_SOLUTIONS == result.error());
             }
         }
     }
@@ -137,18 +123,12 @@ SCENARIO("Gauss Jordan elimination.") {
         
         WHEN("I run it through gauss jordan algorithm with rounding off.") {
             
-            Result<Unit, ErrorCode> result = gaussJordan(testInput, 1e-10);
+            Result<Unit, ErrorCode> result = gauss_jordan(testInput, 1e-10);
             
             THEN("I should get back an error in the result.") {
                 
-                REQUIRE(OperationType::ERR == result.type);
-                REQUIRE(ErrorCode::INFINITE_SOLUTIONS == *result.error);
-                REQUIRE(Unit::unit == *result.val);
-                REQUIRE(
-                    std::string(
-                        "This system of equations has infinite solutions."
-                    ).compare(*result.message) == 0
-                );
+                REQUIRE_FALSE(result);
+                REQUIRE(ErrorCode::INFINITE_SOLUTIONS == result.error());
             }
         }
     }
@@ -164,18 +144,12 @@ SCENARIO("Gauss Jordan elimination.") {
         
         WHEN("I run it through gauss jordan algorithm.") {
             
-            Result<Unit, ErrorCode> result = gaussJordan(testInput);
+            Result<Unit, ErrorCode> result = gauss_jordan(testInput);
             
             THEN("I should get back an error in the result.") {
                 
-                REQUIRE(OperationType::ERR == result.type);
-                REQUIRE(ErrorCode::UNDERDETERMINED_SYSTEM == *result.error);
-                REQUIRE(Unit::unit == *result.val);
-                REQUIRE(
-                    std::string(
-                        "The number of equations in the augmented matrix is less than the number of variables."
-                    ).compare(*result.message) == 0
-                );
+                REQUIRE_FALSE(result);
+                REQUIRE(ErrorCode::UNDERDETERMINED_SYSTEM == result.error());
             }
         }
     }

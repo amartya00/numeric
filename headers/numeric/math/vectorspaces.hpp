@@ -15,18 +15,18 @@
 
 
 /**
- * \namespace Sigabrt
+ * \namespace numeric
  * 
  * \brief The root namespace.
  * */
-namespace Sigabrt {
+namespace numeric {
     /**
-     * \namespace Sigabrt::Numeric
+     * \namespace numeric::functions
      * 
      * \brief Sub namespace with all numeric classes and functions.
      * */
-    namespace Numeric {
-        
+    namespace functions {
+
         /**
          * \brief Function to test linear independence of 2 vectors.
          * 
@@ -45,27 +45,16 @@ namespace Sigabrt {
          * 
          * \return Sigabrt::Types::Result<bool, Sigabrt::Numeric::ErrorCode> 
          * */
-        template <typename T, typename U> 
-        Sigabrt::Types::Result<bool, Sigabrt::Numeric::ErrorCode> 
-        areLinearlyDependent(const Sigabrt::Types::Vector<T>& v1, const Sigabrt::Types::Vector<U>& v2) {
-            if (v1.size() == v2.size()){
-                double dot {static_cast<double>(v1*v2)};
-                bool result {dot*dot == v1.mod()*v2.mod()};
-                return Sigabrt::Types::Result<bool, Sigabrt::Numeric::ErrorCode> {
-                    Sigabrt::Types::OperationType::OK,
-                    result,
-                    std::nullopt,
-                    std::nullopt
-                };
+        template<typename T, typename U>
+        thesoup::types::Result<bool, numeric::ErrorCode>
+        are_linearly_dependent(const numeric::types::Vector<T> &v1, const numeric::types::Vector<U> &v2) {
+            if (v1.size() == v2.size()) {
+                double dot{static_cast<double>(v1 * v2)};
+                return thesoup::types::Result<bool, numeric::ErrorCode>::success({dot * dot == v1.mod() * v2.mod()});
             }
-            return Sigabrt::Types::Result<bool, Sigabrt::Numeric::ErrorCode> {
-                Sigabrt::Types::OperationType::ERR,
-                std::nullopt,
-                Sigabrt::Numeric::ErrorCode::INCOMPATIBLE_VECTORS,
-                std::string("Cannot check linear independence of 2 vectors of unequal dimensions.")
-            };
+            return thesoup::types::Result<bool, numeric::ErrorCode>::failure(numeric::ErrorCode::INCOMPATIBLE_VECTORS);
         }
-        
+
         /**
          * \brief Function to compute cosine of angle between 2 vectors.
          * 
@@ -83,25 +72,16 @@ namespace Sigabrt {
          * 
          * \return Sigabrt::Types::Result<double, Sigabrt::Numeric::ErrorCode> 
          * */
-        template <typename T, typename U> 
-        Sigabrt::Types::Result<double, Sigabrt::Numeric::ErrorCode> 
-        cosineAngle(const Sigabrt::Types::Vector<T>& v1, const Sigabrt::Types::Vector<U>& v2) {
-            if (v1.size() == v2.size()){
-                double dot {static_cast<double>(v1*v2)};
-                double result {static_cast<double>(dot) / std::sqrt(v1.mod()*v2.mod())};
-                return Sigabrt::Types::Result<double, Sigabrt::Numeric::ErrorCode> {
-                    Sigabrt::Types::OperationType::OK,
-                    result,
-                    std::nullopt,
-                    std::nullopt
-                };
+        template<typename T, typename U>
+        thesoup::types::Result<double, numeric::ErrorCode>
+        cosine_angle(const numeric::types::Vector<T> &v1, const numeric::types::Vector<U> &v2) {
+            if (v1.size() == v2.size()) {
+                double dot{static_cast<double>(v1 * v2)};
+                return thesoup::types::Result<double, numeric::ErrorCode>::success(
+                        {static_cast<double>(dot) / std::sqrt(v1.mod() * v2.mod())});
             }
-            return Sigabrt::Types::Result<double, Sigabrt::Numeric::ErrorCode> {
-                Sigabrt::Types::OperationType::ERR,
-                std::nullopt,
-                Sigabrt::Numeric::ErrorCode::INCOMPATIBLE_VECTORS,
-                std::string("Cannot compute angle between 2 vectors of unequal dimensions.")
-            };
+            return thesoup::types::Result<double, numeric::ErrorCode>::failure(
+                    numeric::ErrorCode::INCOMPATIBLE_VECTORS);
         }
 
         /**
@@ -122,30 +102,19 @@ namespace Sigabrt {
          * 
          * \return Sigabrt::Types::Result<bool, Sigabrt::Numeric::ErrorCode>
          * */
-        template <typename T, typename U> 
-        Sigabrt::Types::Result<bool, Sigabrt::Numeric::ErrorCode> isNormalToPlane(
-            const Sigabrt::Types::Plane<T>& plane,
-            const Sigabrt::Types::Vector<U>& vec
+        template<typename T, typename U>
+        thesoup::types::Result<bool, numeric::ErrorCode> is_normal_to_plane(
+                const numeric::types::Plane<T> &plane,
+                const numeric::types::Vector<U> &vec
         ) {
-                if (vec.size() == 3){
-                    const auto& normal = plane.getNormal();
-                    double dot {static_cast<double>(normal*vec)};
-                    double angle {static_cast<double>(dot) / std::sqrt(normal.mod()*vec.mod())};
-                    bool result {angle == 1.0};
-                    return Sigabrt::Types::Result<bool, Sigabrt::Numeric::ErrorCode> {
-                        Sigabrt::Types::OperationType::OK,
-                        result,
-                        std::nullopt,
-                        std::nullopt
-                    };
-                }
-                return Sigabrt::Types::Result<bool, Sigabrt::Numeric::ErrorCode> {
-                    Sigabrt::Types::OperationType::ERR,
-                    std::nullopt,
-                    Sigabrt::Numeric::ErrorCode::INCOMPATIBLE_VECTORS,
-                    std::string("Only 3 dimenstional vectors can be checked for normalcy with a plane.")
-                };
+            if (vec.size() == 3) {
+                const auto &normal = plane.get_normal();
+                double dot{static_cast<double>(normal * vec)};
+                double angle{static_cast<double>(dot) / std::sqrt(normal.mod() * vec.mod())};
+                return thesoup::types::Result<bool, numeric::ErrorCode>::success({angle == 1.0});
             }
+            return thesoup::types::Result<bool, numeric::ErrorCode>::failure(numeric::ErrorCode::INCOMPATIBLE_VECTORS);
+        }
 
         /**
          * \brief Function to compute cross product.
@@ -166,40 +135,32 @@ namespace Sigabrt {
          * \return Sigabrt::Types::Result<bool, Sigabrt::Numeric::ErrorCode>
          * */
         template<typename T, typename U>
-        Sigabrt::Types::Result<Sigabrt::Types::Vector<T>, Sigabrt::Numeric::ErrorCode> cross(
-            const Sigabrt::Types::Vector<T>& v1, 
-            const Sigabrt::Types::Vector<U>& v2
+        thesoup::types::Result<numeric::types::Vector<T>, numeric::ErrorCode> cross(
+                const numeric::types::Vector<T> &v1,
+                const numeric::types::Vector<U> &v2
         ) {
             if (v1.size() == 3 && v2.size() == 3) {
-                const T& a1 {v1[0]};
-                const T& a2 {v1[1]}; 
-                const T& a3 {v1[2]};
-                
-                const T& b1 {v2[0]};
-                const T& b2 {v2[1]}; 
-                const T& b3 {v2[2]};
+                const T &a1{v1[0]};
+                const T &a2{v1[1]};
+                const T &a3{v1[2]};
 
-                Sigabrt::Types::Vector<T> retval {3};
-                retval[0] = static_cast<T>(a2*b3 - a3*b2);
-                retval[1] = static_cast<T>(a3*b1 - a1*b3);
-                retval[2] = static_cast<T>(a1*b2 - a2*b1);
+                const T &b1{v2[0]};
+                const T &b2{v2[1]};
+                const T &b3{v2[2]};
 
-                return Sigabrt::Types::Result<Sigabrt::Types::Vector<T>, Sigabrt::Numeric::ErrorCode> {
-                    Sigabrt::Types::OperationType::OK,
-                    std::move(retval),
-                    std::nullopt,
-                    std::nullopt
-                };
+                numeric::types::Vector<T> retval{3};
+                retval[0] = static_cast<T>(a2 * b3 - a3 * b2);
+                retval[1] = static_cast<T>(a3 * b1 - a1 * b3);
+                retval[2] = static_cast<T>(a1 * b2 - a2 * b1);
+
+                return thesoup::types::Result<numeric::types::Vector<T>, numeric::ErrorCode>::success(
+                        std::move(retval));
             }
-            return Sigabrt::Types::Result<Sigabrt::Types::Vector<T>, Sigabrt::Numeric::ErrorCode> {
-                Sigabrt::Types::OperationType::ERR,
-                std::nullopt,
-                Sigabrt::Numeric::ErrorCode::INCOMPATIBLE_VECTORS,
-                std::string("Can compute cross product of only 3 dimensional vectors.")
-            };
+            return thesoup::types::Result<numeric::types::Vector<T>, numeric::ErrorCode>::failure(
+                    numeric::ErrorCode::INCOMPATIBLE_VECTORS);
         }
-        
-        
+
+
         /**
          * \brief Function to test linear indenendence of a ser of vectors.
          * 
@@ -218,83 +179,56 @@ namespace Sigabrt {
          * 
          * \return Sigabrt::Types::Result<bool, Sigabrt::Numeric::ErrorCode>
          * 
-         **/    
-        template <typename T> Sigabrt::Types::Result<bool, Sigabrt::Numeric::ErrorCode> 
-        linearIndependenceOfSystem(const std::vector<std::reference_wrapper<Sigabrt::Types::Vector<T>>>& vectors) {
+         **/
+        template<typename T>
+        thesoup::types::Result<bool, numeric::ErrorCode>
+        linear_independence_of_system(const std::vector<std::reference_wrapper<numeric::types::Vector<T>>> &vectors) {
             // Linear independence of just one vector does not make any sense
             if (vectors.size() == 1) {
-                return Sigabrt::Types::Result<bool, Sigabrt::Numeric::ErrorCode> {
-                    Sigabrt::Types::OperationType::ERR,
-                    std::nullopt,
-                    Sigabrt::Numeric::ErrorCode::UNDERDETERMINED_SYSTEM,
-                    std::string("You cannot determine linear independence of only 1 vector unless you are high.")
-                };
+                return thesoup::types::Result<bool, numeric::ErrorCode>::failure(
+                        numeric::ErrorCode::UNDERDETERMINED_SYSTEM);
             }
-            
+
             // If all vectors do not have same dimensions, return an error.
-            std::size_t len {vectors[0].get().size()};
-            for (const auto& v : vectors) {
+            std::size_t len{vectors[0].get().size()};
+            for (const auto &v: vectors) {
                 if (v.get().size() != len) {
-                    return Sigabrt::Types::Result<bool, Sigabrt::Numeric::ErrorCode> {
-                        Sigabrt::Types::OperationType::ERR,
-                        std::nullopt,
-                        Sigabrt::Numeric::ErrorCode::INCOMPATIBLE_VECTORS,
-                        std::string("Cannot compare linear independence of vectors of unequal dimensions.")
-                    };
+                    return thesoup::types::Result<bool, numeric::ErrorCode>::failure(
+                            numeric::ErrorCode::INCOMPATIBLE_VECTORS);
                 }
             }
-            
+
             // If the matrix is "wider", it cannot be linearly independent.
             if (vectors.size() > len) {
-                return Sigabrt::Types::Result<bool, Sigabrt::Numeric::ErrorCode> {
-                    Sigabrt::Types::OperationType::OK,
-                    false,
-                    std::nullopt,
-                    std::nullopt
-                };
+                return thesoup::types::Result<bool, numeric::ErrorCode>::success(false);
             }
-            
+
             // Initialize the matrix
-            Sigabrt::Types::Matrix<T> mat {len, vectors.size()};
+            numeric::types::Matrix<T> mat{len, vectors.size()};
             for (std::size_t i = 0; i < len; i++) {
-                for(std::size_t j = 0; j < vectors.size(); j++) {
+                for (std::size_t j = 0; j < vectors.size(); j++) {
                     mat[i][j] = vectors[j].get()[i];
                 }
             }
-            
-            // Run it through RREF
-            Sigabrt::Types::Result<Sigabrt::Types::Unit, Sigabrt::Numeric::ErrorCode> res {Sigabrt::Numeric::rref(mat)};
 
-            if (res.type == Sigabrt::Types::OperationType::ERR) {
-                if(*res.error == Sigabrt::Numeric::ErrorCode::FREE_COLUMNS_RREF) {
-                    // A homogenous system cannot have no solutions. It's either 1 or infinite.
+            // Run it through RREF
+            thesoup::types::Result<thesoup::types::Unit, numeric::ErrorCode> res{numeric::functions::rref(mat)};
+
+            if (!res) {
+                if (res.error() == numeric::ErrorCode::FREE_COLUMNS_RREF) {
+                    // A homogenous system has to have solutions. It's either 1 or infinite.
                     // Presence of free variables indicate many solutions, which in turn indicates
                     // linear dependence.
-                    return Sigabrt::Types::Result<bool, Sigabrt::Numeric::ErrorCode> {
-                        Sigabrt::Types::OperationType::OK,
-                        false,
-                        std::nullopt,
-                        std::nullopt
-                    };
+                    return thesoup::types::Result<bool, numeric::ErrorCode>::success(false);
                 } else {
-                    return Sigabrt::Types::Result<bool, Sigabrt::Numeric::ErrorCode> {
-                        Sigabrt::Types::OperationType::ERR,
-                        std::nullopt,
-                        Sigabrt::Numeric::ErrorCode::UNKNOWN_ERROR,
-                        std::string("Unknown error occured while trying to compute linear independence of the set of vectors.")
-                    }; 
+                    return thesoup::types::Result<bool, numeric::ErrorCode>::failure(
+                            numeric::ErrorCode::UNKNOWN_ERROR);
                 }
             } else {
                 // No free variables indicates a unique solution which would be V = 0
-                return Sigabrt::Types::Result<bool, Sigabrt::Numeric::ErrorCode> {
-                    Sigabrt::Types::OperationType::OK,
-                    true,
-                    std::nullopt,
-                    std::nullopt
-                };
+                return thesoup::types::Result<bool, numeric::ErrorCode>::success(true);
             }
         }
-        
     }
 }
 

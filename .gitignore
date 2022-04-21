@@ -6,3 +6,4 @@ _build/
 .meson.build.kate-swp
 .vs/
 ./numeric/
+.DS_Store

@@ -11,8 +11,8 @@
 #include <numeric/types/models.hpp>
 #include <numeric/benchmark/benchmark.hpp>
 
-using Sigabrt::Types::RunInfo;
-using Sigabrt::Benchmark::Benchmark;
+using numeric::types::RunInfo;
+using numeric::benchmark::Benchmark;
 
 double max(const std::vector<double>& arr) {
     double maxItem {arr[0]};
@@ -62,7 +62,7 @@ SCENARIO("Benchmark runner.") {
                 
                 THEN("I should get back the run times in a map.") {
                     
-                    std::map map = bm.getRunInfos();
+                    std::map map = bm.get_run_infos();
                     
                     REQUIRE(inputs.size() == map.size());
                     

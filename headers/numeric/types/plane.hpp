@@ -7,25 +7,39 @@
 #include <numeric/types/vector.hpp>
 
 /**
- * \namespace Sigabrt
+ * \namespace numeric
  * 
  * \brief The root namespace.
  * */
-namespace Sigabrt {
+namespace numeric {
     
     /**
-     * \namespace Sigabrt::Types
+     * \namespace numeric::types
      * 
      * \brief The namespace containing some special types.
      * */
-    namespace Types {
-        
+    namespace types {
+        /**
+         * \class Plane
+         * 
+         * \tparam T The type of variable.
+         * 
+         * \brief The type representing a plane.
+         * 
+         * This class represents a plane (as in linear algebra), of type `T`. While planes where the variables x,y,z and k can 
+         * only tage integral values do not make sense in convention, this is templatized to make it more generic. This class
+         * provides for easy translation between the linear form `ax + by + cz = k` and the point-normal form `N.(X-X0) = 0`
+         * 
+         * */
         template <typename T> class Plane {
         private:
-            Sigabrt::Types::Vector<T> normal;
-            Sigabrt::Types::Vector<T> point;
+            numeric::types::Vector<T> normal;
+            numeric::types::Vector<T> point;
             std::tuple<T, T, T, T> coefficients;
         public:
+            /**
+             * 
+             * */
             Plane(const T& a, const T& b, const T& c, const T& k) : normal {3}, point {3}, coefficients {std::make_tuple(a,b,c,k)} {
                 if (a == static_cast<T>(0) && b == static_cast<T>(0) && c == static_cast<T>(0)) {
                     throw std::invalid_argument("A plane of the form ax + by + cz = K, cannot have a=0 and b=0 and c=0.");
@@ -50,7 +64,7 @@ namespace Sigabrt {
             }
             
             template <typename U, typename V> 
-            Plane(const Sigabrt::Types::Vector<U>& normal, const Sigabrt::Types::Vector<V>& point): normal {3}, point {3} {
+            Plane(const numeric::types::Vector<U>& normal, const numeric::types::Vector<V>& point): normal {3}, point {3} {
                 if (normal.size() != 3 || point.size() != 3) {
                     throw std::invalid_argument("Vectors representing planes normals and points have to be of dimension 3.");
                 }
@@ -70,27 +84,15 @@ namespace Sigabrt {
                 );
             }
             
-            const Sigabrt::Types::Vector<T>& getNormal() const {
+            const numeric::types::Vector<T>& get_normal() const {
                 return normal;
             }
-            
-            const Sigabrt::Types::Vector<T>& getNormal() {
-                return normal;
-            }
-            
-            const Sigabrt::Types::Vector<T>& getPoint() const {
+
+            const numeric::types::Vector<T>& get_point() const {
                 return point;
             }
             
-            const Sigabrt::Types::Vector<T>& getPoint() {
-                return point;
-            }
-            
-            const std::tuple<T,T,T,T>& getCoefficients() const {
-                return coefficients;
-            }
-            
-            const std::tuple<T,T,T,T>& getCoefficients() {
+            const std::tuple<T,T,T,T>& get_coefficients() const {
                 return coefficients;
             }
         };

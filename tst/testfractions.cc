@@ -10,7 +10,7 @@
 #include <catch2/catch.hpp>
 #include <numeric/types/fraction.hpp>
 
-using Sigabrt::Types::Fraction;
+using numeric::types::Fraction;
 
 SCENARIO("Fractions construction and conversion tests.") {
     

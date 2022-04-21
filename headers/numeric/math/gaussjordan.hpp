@@ -8,19 +8,21 @@
 #include <numeric/types/matrix.hpp>
 #include <numeric/math/errors.hpp>
 
+#include <thesoup/types/types.hpp>
+
 
 /**
- * \namespace Sigabrt
+ * \namespace numeric
  * 
  * \brief The root namespace.
  * */
-namespace Sigabrt {
+namespace numeric {
     /**
-     * \namespace Sigabrt::Numeric
+     * \namespace numeric::functions
      * 
      * \brief Sub namespace with all numeric classes and functions.
      * */
-    namespace Numeric {
+    namespace functions {
         /**
          * \brief Function to solve a system of linear equations.
          * 
@@ -45,50 +47,28 @@ namespace Sigabrt {
          *   - `NO_SOLUTIONS`: If free columns are detected during reduction. This indicates a lack of a unique solution.
          * 
          * */
-        template <typename T> Sigabrt::Types::Result<Sigabrt::Types::Unit, Sigabrt::Numeric::ErrorCode> 
-        gaussJordan(Sigabrt::Types::Matrix<T>& matrix) {
+        template <typename T> thesoup::types::Result<thesoup::types::Unit, numeric::ErrorCode>
+        gauss_jordan(numeric::types::Matrix<T>& matrix) {
             // Step 0: Validate matrix in augmented form
             if (matrix.getRows() < matrix.getCols()-1) {
-                return Sigabrt::Types::Result<Sigabrt::Types::Unit, Sigabrt::Numeric::ErrorCode> {
-                    Sigabrt::Types::OperationType::ERR,
-                    Sigabrt::Types::Unit::unit,
-                    Sigabrt::Numeric::ErrorCode::UNDERDETERMINED_SYSTEM,
-                    std::string("The number of equations in the augmented matrix is less than the number of variables.")
-                };
+                return thesoup::types::Result<thesoup::types::Unit, numeric::ErrorCode>::failure(numeric::ErrorCode::UNDERDETERMINED_SYSTEM);
             }
             
             auto retval = rref(matrix);
-            if (retval.type == Sigabrt::Types::OperationType::ERR) {
-                
-                if (retval.error == Sigabrt::Numeric::ErrorCode::FREE_COLUMNS_RREF) {
+            if (retval) {
+                if (retval.error() == numeric::ErrorCode::FREE_COLUMNS_RREF) {
                     // We have free columns. We need to check for the case where we have NO solutions.
                     // If we cannot find one, then there will be infinitely many solutions.
                     for (std::size_t rowNum = 0; rowNum < matrix.getRows(); rowNum++) {
-                        if (Sigabrt::Numeric::falseIndentityRow(matrix[matrix.getRows() - rowNum -1])) {
-                            return Sigabrt::Types::Result<Sigabrt::Types::Unit, Sigabrt::Numeric::ErrorCode> {
-                                Sigabrt::Types::OperationType::ERR,
-                                Sigabrt::Types::Unit::unit,
-                                Sigabrt::Numeric::ErrorCode::NO_SOLUTIONS,
-                                std::string("This system of equations has no solutions.")
-                            };
+                        if (numeric::functions::false_identity_row(matrix[matrix.getRows() - rowNum - 1])) {
+                            return thesoup::types::Result<thesoup::types::Unit, numeric::ErrorCode>::failure(numeric::ErrorCode::NO_SOLUTIONS);
                         }
                     }
-                    return Sigabrt::Types::Result<Sigabrt::Types::Unit, Sigabrt::Numeric::ErrorCode> {
-                        Sigabrt::Types::OperationType::ERR,
-                        Sigabrt::Types::Unit::unit,
-                        Sigabrt::Numeric::ErrorCode::INFINITE_SOLUTIONS,
-                        std::string("This system of equations has infinite solutions.")
-                    };
+                    return thesoup::types::Result<thesoup::types::Unit, numeric::ErrorCode>::failure(numeric::ErrorCode::INFINITE_SOLUTIONS);
                 }
                 else {
-                    return Sigabrt::Types::Result<Sigabrt::Types::Unit, Sigabrt::Numeric::ErrorCode> {
-                        Sigabrt::Types::OperationType::ERR,
-                        Sigabrt::Types::Unit::unit,
-                        Sigabrt::Numeric::ErrorCode::UNKNOWN_ERROR,
-                        std::nullopt
-                    };
+                    return thesoup::types::Result<thesoup::types::Unit, numeric::ErrorCode>::failure(numeric::ErrorCode::UNKNOWN_ERROR);
                 }
-                
             } else {
                 return retval;
             }
@@ -109,14 +89,14 @@ namespace Sigabrt {
          * The reduction is done in place to avoid copies.
          * 
          * During computation, this function handles precision errors by rounding off very small numbers (with an absolute 
-         * value less than the `zeroPrecision` parameter), to zero.
+         * value less than the `zero_precision` parameter), to zero.
          * 
          * NOTE: In this version of the function, if you are using a non primitive type, it has to support conversion to double.
          * 
          * \param matrix: 
          *   Matrix<T> The **non const** reference to the input matrix.
          * 
-         * \param zeroPrecision:
+         * \param zero_precision:
          *   The double value which is considered to be the threshold to be 0. Example if this is set to 1e-10, all numbers
          *   between -(1e-10 ) and 1e-10 will be considered 0.
          * 
@@ -128,47 +108,27 @@ namespace Sigabrt {
          *   - `FREE_COLUMNS_RREF`: If free columns are detected during reduction. This indicates a lack of a unique solution.
          * 
          * */
-        template <typename T> Sigabrt::Types::Result<Sigabrt::Types::Unit, Sigabrt::Numeric::ErrorCode> 
-        gaussJordan(Sigabrt::Types::Matrix<T>& matrix, const double& zeroPrecision) {
+        template <typename T> thesoup::types::Result<thesoup::types::Unit, numeric::ErrorCode>
+        gauss_jordan(numeric::types::Matrix<T>& matrix, const double& zero_precision) {
             // Step 0: Validate matrix in augmented form
             if (matrix.getRows() < matrix.getCols()-1) {
-                return Sigabrt::Types::Result<Sigabrt::Types::Unit, Sigabrt::Numeric::ErrorCode> {
-                    Sigabrt::Types::OperationType::ERR,
-                    Sigabrt::Types::Unit::unit,
-                    Sigabrt::Numeric::ErrorCode::UNDERDETERMINED_SYSTEM,
-                    std::string("The number of equations in the augmented matrix is less than the number of variables.")
-                };
+                return thesoup::types::Result<thesoup::types::Unit, numeric::ErrorCode>::failure(numeric::ErrorCode::UNDERDETERMINED_SYSTEM);
             }
             
-            auto retval = rref(matrix, zeroPrecision);
-            if (retval.type == Sigabrt::Types::OperationType::ERR) {
-                if (retval.error == Sigabrt::Numeric::ErrorCode::FREE_COLUMNS_RREF) {
+            auto retval {rref(matrix, zero_precision)};
+            if (!retval) {
+                if (retval.error() == numeric::ErrorCode::FREE_COLUMNS_RREF) {
                     // We have free columns. We need to check for the case where we have NO solutions.
                     // If we cannot find one, then there will be infinitely many solutions.
                     for (std::size_t rowNum = 0; rowNum < matrix.getRows(); rowNum++) {
-                        if (Sigabrt::Numeric::falseIndentityRow(matrix[matrix.getRows() - rowNum -1])) {
-                            return Sigabrt::Types::Result<Sigabrt::Types::Unit, Sigabrt::Numeric::ErrorCode> {
-                                Sigabrt::Types::OperationType::ERR,
-                                Sigabrt::Types::Unit::unit,
-                                Sigabrt::Numeric::ErrorCode::NO_SOLUTIONS,
-                                std::string("This system of equations has no solutions.")
-                            };
+                        if (numeric::functions::false_identity_row(matrix[matrix.getRows() - rowNum - 1])) {
+                            return thesoup::types::Result<thesoup::types::Unit, numeric::ErrorCode>::failure(numeric::ErrorCode::NO_SOLUTIONS);
                         }
                     }
-                    return Sigabrt::Types::Result<Sigabrt::Types::Unit, Sigabrt::Numeric::ErrorCode> {
-                        Sigabrt::Types::OperationType::ERR,
-                        Sigabrt::Types::Unit::unit,
-                        Sigabrt::Numeric::ErrorCode::INFINITE_SOLUTIONS,
-                        std::string("This system of equations has infinite solutions.")
-                    };
+                    return thesoup::types::Result<thesoup::types::Unit, numeric::ErrorCode>::failure(numeric::ErrorCode::INFINITE_SOLUTIONS);
                 }
                 else {
-                    return Sigabrt::Types::Result<Sigabrt::Types::Unit, Sigabrt::Numeric::ErrorCode> {
-                        Sigabrt::Types::OperationType::ERR,
-                        Sigabrt::Types::Unit::unit,
-                        Sigabrt::Numeric::ErrorCode::UNKNOWN_ERROR,
-                        std::nullopt
-                    };
+                    return thesoup::types::Result<thesoup::types::Unit, numeric::ErrorCode>::failure(numeric::ErrorCode::UNKNOWN_ERROR);
                 }
                 
             } else {

@@ -9,21 +9,21 @@
 #include <numeric/math/errors.hpp>
 
 /**
- * \namespace Sigabrt
+ * \namespace numeric
  * 
  * \brief The root namespace.
  * */
-namespace Sigabrt {
+namespace numeric {
     /**
-     * \namespace Sigabrt::Numeric
+     * \namespace numeric::functions
      * 
      * \brief Sub namespace with all numeric classes and functions.
      * */
-    namespace Numeric {
+    namespace functions {
         namespace {
             template <typename T>
             std::optional<std::size_t> findNextPivot(
-                const Sigabrt::Types::Matrix<T>& matrix, 
+                const numeric::types::Matrix<T>& matrix,
                 const std::size_t& startRow, 
                 const std::size_t& startCol) {
                 for (std::size_t i = startRow+1; i < matrix.getRows(); i++) {
@@ -56,7 +56,7 @@ namespace Sigabrt {
          * 
          * \return bool indicating whether the row is a false ID or not.
          * */
-        template <typename T> bool falseIndentityRow(const Sigabrt::Types::Slice<T>& row) {
+        template <typename T> bool false_identity_row(const thesoup::types::Slice<T>& row) {
             const T& rightMost {row[row.size-1]};
             if (rightMost == 0) {
                 return false;
@@ -84,7 +84,7 @@ namespace Sigabrt {
          * 
          * \return bool indicating whether the row is a false ID or not.
          * */
-        template <typename T> bool identityRow(const Sigabrt::Types::Slice<T>& row) {
+        template <typename T> bool identity_row(const thesoup::types::Slice<T>& row) {
             const T& first {row[0]};
             for (const auto& elem : row) {
                 if (elem != first) {
@@ -110,8 +110,8 @@ namespace Sigabrt {
          *   Possible error codes:
          *   - `FREE_COLUMNS_RREF`: If free columns are detected during reduction. This indicates a lack of a unique solution.
          * */
-        template <typename T> Sigabrt::Types::Result<Sigabrt::Types::Unit, Sigabrt::Numeric::ErrorCode> 
-        rref(Sigabrt::Types::Matrix<T>& matrix) {
+        template <typename T> thesoup::types::Result<thesoup::types::Unit, numeric::ErrorCode>
+        rref(numeric::types::Matrix<T>& matrix) {
             bool freeElements {false};
             std::size_t smallerDim {matrix.getRows() < matrix.getCols()? matrix.getRows(): matrix.getCols()};
             for (std::size_t i = 0; i < smallerDim; i++) {
@@ -143,19 +143,9 @@ namespace Sigabrt {
             }
             
             if (freeElements) {
-                return Sigabrt::Types::Result<Sigabrt::Types::Unit, Sigabrt::Numeric::ErrorCode> {
-                    Sigabrt::Types::OperationType::ERR,
-                    Sigabrt::Types::Unit::unit,
-                    Sigabrt::Numeric::ErrorCode::FREE_COLUMNS_RREF,
-                    std::nullopt
-                };
+                return thesoup::types::Result<thesoup::types::Unit, numeric::ErrorCode>::failure(numeric::ErrorCode::FREE_COLUMNS_RREF) ;
             } else {
-                return Sigabrt::Types::Result<Sigabrt::Types::Unit, Sigabrt::Numeric::ErrorCode> {
-                    Sigabrt::Types::OperationType::OK,
-                    Sigabrt::Types::Unit::unit,
-                    std::nullopt,
-                    std::nullopt
-                };
+                return thesoup::types::Result<thesoup::types::Unit, numeric::ErrorCode>::success(thesoup::types::Unit::unit);
             }
             
         }
@@ -168,14 +158,14 @@ namespace Sigabrt {
          * that this function does not throw exceptions. It returns a `Result<T,E>` to indicate the results of computation.
          * 
          * During computation, this function handles precision errors by rounding off very small numbers (with an absolute 
-         * value less than the `zeroPrecision` parameter), to zero.
+         * value less than the `zero_precision` parameter), to zero.
          * 
          * NOTE: In this version of the function, if you are using a non primitive type, it has to support conversion to double.
          * 
          * \param matrix: 
          *   Matrix<T> The **non const** reference to the input matrix.
          * 
-         * \param zeroPrecision:
+         * \param zero_precision:
          *   The double value which is considered to be the threshold to be 0. Example if this is set to 1e-10, all numbers
          *   between -(1e-10 ) and 1e-10 will be considered 0.
          * 
@@ -185,8 +175,8 @@ namespace Sigabrt {
          *   Possible error codes:
          *   - `FREE_COLUMNS_RREF`: If free columns are detected during reduction. This indicates a lack of a unique solution.
          * */
-        template <typename T> Sigabrt::Types::Result<Sigabrt::Types::Unit, Sigabrt::Numeric::ErrorCode> 
-        rref(Sigabrt::Types::Matrix<T>& matrix, const double& zeroPrecision) {
+        template <typename T> thesoup::types::Result<thesoup::types::Unit, numeric::ErrorCode>
+        rref(numeric::types::Matrix<T>& matrix, const double& zero_precision) {
             bool freeElements {false};
             std::size_t smallerDim {matrix.getRows() < matrix.getCols()? matrix.getRows(): matrix.getCols()};
             for (std::size_t i = 0; i < smallerDim; i++) {
@@ -213,32 +203,22 @@ namespace Sigabrt {
                     
                     // Round off the row
                     for (auto& elem : matrix[otherRow]) {
-                        elem = roundOffToZero(elem, zeroPrecision);
+                        elem = roundOffToZero(elem, zero_precision);
                     }
                 }
                 
                 // Normalize pivot row, and round off.
                 matrix.scaleRow(i, static_cast<T>(1)/matrix[i][i]);
                 for (auto& elem : matrix[i]) {
-                    elem = roundOffToZero(elem, zeroPrecision);
+                    elem = roundOffToZero(elem, zero_precision);
                 }
                 
             }
             
             if (freeElements) {
-                return Sigabrt::Types::Result<Sigabrt::Types::Unit, Sigabrt::Numeric::ErrorCode> {
-                    Sigabrt::Types::OperationType::ERR,
-                    Sigabrt::Types::Unit::unit,
-                    Sigabrt::Numeric::ErrorCode::FREE_COLUMNS_RREF,
-                    std::nullopt
-                };
+                return thesoup::types::Result<thesoup::types::Unit, numeric::ErrorCode>::failure(numeric::ErrorCode::FREE_COLUMNS_RREF);
             } else {
-                return Sigabrt::Types::Result<Sigabrt::Types::Unit, Sigabrt::Numeric::ErrorCode> {
-                    Sigabrt::Types::OperationType::OK,
-                    Sigabrt::Types::Unit::unit,
-                    std::nullopt,
-                    std::nullopt
-                };
+                return thesoup::types::Result<thesoup::types::Unit, numeric::ErrorCode>::success(thesoup::types::Unit::unit);
             }
             
         }

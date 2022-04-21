@@ -11,17 +11,17 @@
 #include <numeric/types/models.hpp>
 
 /**
- * \namespace Sigabrt
+ * \namespace numeric
  * 
  * \brief The root namespace.
  * */
-namespace Sigabrt {
+namespace numeric {
     /**
-     * \namespace Sigabrt::Types
+     * \namespace numeric::types
      * 
      * \brief The namespace containing some special types.
      * */
-    namespace Types {
+    namespace types {
         /**
          * \class Vector
          * \tparam T Some numeric type

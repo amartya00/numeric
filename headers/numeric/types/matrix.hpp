@@ -10,18 +10,20 @@
 #include <numeric/types/vector.hpp>
 #include <numeric/types/models.hpp>
 
+#include <thesoup/types/types.hpp>
+
 /**
- * \namespace Sigabrt
+ * \namespace numeric
  * 
  * \brief The root namespace.
  * */
-namespace Sigabrt {
+namespace numeric {
     /**
-     * \namespace Sigabrt::Types
+     * \namespace sigabrt::types
      * 
      * \brief The namespace containing some special types.
      * */
-    namespace Types {
+    namespace types {
         /**
          * \class Matrix
          * 
@@ -57,7 +59,7 @@ namespace Sigabrt {
         private:
             std::size_t nrows;
             std::size_t ncols;
-            std::unique_ptr<Sigabrt::Types::Slice<T>[]> rows;
+            std::unique_ptr<thesoup::types::Slice<T>[]> rows;
             std::unique_ptr<T[]> storage;
             
             void initializeSlices() {
@@ -82,7 +84,7 @@ namespace Sigabrt {
                 const std::size_t& ncols
             ): nrows {nrows}, 
                 ncols {ncols}, 
-                rows {std::make_unique<Sigabrt::Types::Slice<T>[]>(nrows)},
+                rows {std::make_unique<thesoup::types::Slice<T>[]>(nrows)},
                 storage {std::make_unique<T[]>(nrows * ncols)} {
                     initializeSlices();
                 }
@@ -102,7 +104,7 @@ namespace Sigabrt {
                 } else {
                     nrows = vecs.size();
                     ncols = vecs[0].size();
-                    rows = std::make_unique<Sigabrt::Types::Slice<T>[]>(nrows);
+                    rows = std::make_unique<thesoup::types::Slice<T>[]>(nrows);
                     storage = std::make_unique<T[]>(nrows * ncols);
                     
                     for (std::size_t i = 0; i < nrows; i++) {
@@ -135,7 +137,7 @@ namespace Sigabrt {
                 other.storage = nullptr;
             }
 
-            Sigabrt::Types::Slice<T>& operator[](const std::size_t& row) {
+            thesoup::types::Slice<T>& operator[](const std::size_t& row) {
                 if (row >= nrows) {
                     throw std::out_of_range("Matrix row index out of range.");
                 }
@@ -143,26 +145,26 @@ namespace Sigabrt {
                 return rows[row];
             }
 
-            const Sigabrt::Types::Slice<T>& operator[](const std::size_t& row) const {
+            const thesoup::types::Slice<T>& operator[](const std::size_t& row) const {
                 if (row >= nrows) {
                     throw std::out_of_range("Matrix row index out of range.");
                 }
                 return rows[row];
             }
 
-            const Sigabrt::Types::Slice<T>* begin() const {
+            const thesoup::types::Slice<T>* begin() const {
                 return &rows[0];
             }
 
-            const Sigabrt::Types::Slice<T>* end() const {
+            const thesoup::types::Slice<T>* end() const {
                 return &rows[nrows];
             }
 
-            Sigabrt::Types::Slice<T>* begin() {
+            thesoup::types::Slice<T>* begin() {
                 return &rows[0];
             }
 
-            Sigabrt::Types::Slice<T>* end() {
+            thesoup::types::Slice<T>* end() {
                 return &rows[nrows];
             }
 
@@ -337,7 +339,7 @@ namespace Sigabrt {
             return retval;
         }
         
-        // Override subtract operator operator
+        // Override subtract operator
         template <typename T> Matrix<T> operator-(const Matrix<T>& lhs, const Matrix<T>& rhs) {
             if (lhs.getRows() != rhs.getRows() || lhs.getCols() != rhs.getCols()) {
                 throw std::invalid_argument("Matrices of different dimensions cannot be added");
@@ -373,7 +375,7 @@ namespace Sigabrt {
         }
         
         // Override multiply operator  lhs = matrix and rhs = vector.
-        template <typename T> Sigabrt::Types::Vector<T> operator*(const Matrix<T>& lhs, const Sigabrt::Types::Vector<T>& rhs) {
+        template <typename T> numeric::types::Vector<T> operator*(const Matrix<T>& lhs, const numeric::types::Vector<T>& rhs) {
             if (lhs.getCols() != rhs.size()) {
                 throw std::invalid_argument("Incompatible matrix and vector for multiplication.");
             }
@@ -393,7 +395,7 @@ namespace Sigabrt {
         }
         
         // Override multiply operator lhs = vector and rhs = matrix.
-        template <typename T> Sigabrt::Types::Vector<T> operator*(const Sigabrt::Types::Vector<T>& lhs, const Matrix<T>& rhs) {
+        template <typename T> numeric::types::Vector<T> operator*(const numeric::types::Vector<T>& lhs, const Matrix<T>& rhs) {
             if (lhs.size() != rhs.getRows()) {
                 throw std::invalid_argument("Incompatible matrix and vector for multiplication.");
             }

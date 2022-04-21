@@ -9,8 +9,8 @@
 #include <numeric/types/matrix.hpp>
 #include <numeric/types/vector.hpp>
 
-using Sigabrt::Types::Matrix;
-using Sigabrt::Types::Vector;
+using numeric::types::Matrix;
+using numeric::types::Vector;
 
 template <typename T> bool isEqual(const Matrix<T>& matrix, const std::vector<std::vector<T>>& vecs) {
     if (matrix.getRows() != vecs.size()) {

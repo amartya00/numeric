@@ -15,18 +15,17 @@
 #include <numeric/math/vectorspaces.hpp>
 #include <numeric/math/errors.hpp>
 
-using Sigabrt::Types::Fraction;
-using Sigabrt::Types::Vector;
-using Sigabrt::Types::Plane;
-using Sigabrt::Types::Result;
-using Sigabrt::Numeric::ErrorCode;
-using Sigabrt::Types::OperationType;
+using numeric::types::Fraction;
+using numeric::types::Vector;
+using numeric::types::Plane;
+using thesoup::types::Result;
+using numeric::ErrorCode;
 
-using Sigabrt::Numeric::areLinearlyDependent;
-using Sigabrt::Numeric::cosineAngle;
-using Sigabrt::Numeric::isNormalToPlane;
-using Sigabrt::Numeric::cross;
-using Sigabrt::Numeric::linearIndependenceOfSystem;
+using numeric::functions::are_linearly_dependent;
+using numeric::functions::cosine_angle;
+using numeric::functions::is_normal_to_plane;
+using numeric::functions::cross;
+using numeric::functions::linear_independence_of_system;
 
 SCENARIO("Testing linear dependence of vectors.") {
     
@@ -40,11 +39,9 @@ SCENARIO("Testing linear dependence of vectors.") {
             
             THEN("They should evaluate to dependent.") {
                 
-                Result<bool, ErrorCode> res {areLinearlyDependent(v1, v2)};
-                REQUIRE(OperationType::OK == res.type);
-                REQUIRE(*res.val);
-                REQUIRE(std::nullopt == res.error);
-                REQUIRE(std::nullopt == res.message);
+                Result<bool, ErrorCode> res {are_linearly_dependent(v1, v2)};
+                REQUIRE(res);
+                REQUIRE(res.unwrap());
             }
         }
         
@@ -52,11 +49,9 @@ SCENARIO("Testing linear dependence of vectors.") {
             
             THEN("They they should evaluate to linearly independent.") {
                 
-                Result<bool, ErrorCode> res {areLinearlyDependent(v1, v3)};
-                REQUIRE(OperationType::OK == res.type);
-                REQUIRE(!*res.val);
-                REQUIRE(std::nullopt == res.error);
-                REQUIRE(std::nullopt == res.message);
+                Result<bool, ErrorCode> res {are_linearly_dependent(v1, v3)};
+                REQUIRE(res);
+                REQUIRE(!res.unwrap());
             }
         }
         
@@ -64,17 +59,11 @@ SCENARIO("Testing linear dependence of vectors.") {
             
             Vector<int> v1 {{1,2,3}};
             Vector<int> v2 {{1,2}};
-            Result<bool, ErrorCode> res {areLinearlyDependent(v1, v2)};
+            Result<bool, ErrorCode> res {are_linearly_dependent(v1, v2)};
             
             THEN("The result should be an error.") {
-                REQUIRE(OperationType::ERR == res.type);
-                REQUIRE(std::nullopt == res.val);
-                REQUIRE(ErrorCode::INCOMPATIBLE_VECTORS == *res.error);
-                REQUIRE(
-                    std::string(
-                        "Cannot check linear independence of 2 vectors of unequal dimensions."
-                    ).compare(*res.message) == 0
-                );
+                REQUIRE(!res);
+                REQUIRE(ErrorCode::INCOMPATIBLE_VECTORS == res.error());
             }
         }
     }
@@ -92,11 +81,9 @@ SCENARIO("Testing computation of angles between 2 vectors.") {
             
             THEN("They should anti-parallel.") {
                 
-                Result<double, ErrorCode> res {cosineAngle(v1, v2)};
-                REQUIRE(OperationType::OK == res.type);
-                REQUIRE(-1.0 == *res.val);
-                REQUIRE(std::nullopt == res.error);
-                REQUIRE(std::nullopt == res.message);
+                Result<double, ErrorCode> res {cosine_angle(v1, v2)};
+                REQUIRE(res);
+                REQUIRE(-1.0 == res.unwrap());
             }
         }
         
@@ -104,11 +91,9 @@ SCENARIO("Testing computation of angles between 2 vectors.") {
             
             THEN("They they should evaluate to perpendicular.") {
                 
-                Result<double, ErrorCode> res {cosineAngle(v1, v3)};
-                REQUIRE(OperationType::OK == res.type);
-                REQUIRE(!*res.val);
-                REQUIRE(std::nullopt == res.error);
-                REQUIRE(std::nullopt == res.message);
+                Result<double, ErrorCode> res {cosine_angle(v1, v3)};
+                REQUIRE(res);
+                REQUIRE(0.0 == res.unwrap());
             }
         }
         
@@ -116,17 +101,11 @@ SCENARIO("Testing computation of angles between 2 vectors.") {
             
             Vector<int> v1 {{1,2,3}};
             Vector<int> v2 {{1,2}};
-            Result<double, ErrorCode> res {cosineAngle(v1, v2)};
+            Result<double, ErrorCode> res {cosine_angle(v1, v2)};
             
             THEN("The result should be an error.") {
-                REQUIRE(OperationType::ERR == res.type);
-                REQUIRE(std::nullopt == res.val);
-                REQUIRE(ErrorCode::INCOMPATIBLE_VECTORS == *res.error);
-                REQUIRE(
-                    std::string(
-                        "Cannot compute angle between 2 vectors of unequal dimensions."
-                    ).compare(*res.message) == 0
-                );
+                REQUIRE(!res);
+                REQUIRE(ErrorCode::INCOMPATIBLE_VECTORS == res.error());
             }
         }
     }
@@ -142,31 +121,26 @@ SCENARIO("Testing vectors normal to planes.") {
         
         WHEN("I test if the vectors are nirmal to the plane.") {
             
-            auto res1 {isNormalToPlane(p1, testV1)};
-            auto res2 {isNormalToPlane(p1, testV1)};
+            auto res1 {is_normal_to_plane(p1, testV1)};
+            auto res2 {is_normal_to_plane(p1, testV1)};
             
             THEN("The results should be as expected.") {
-                REQUIRE(OperationType::OK == res1.type);
-                REQUIRE(OperationType::OK == res2.type);
-                REQUIRE(*res1.val);
-                REQUIRE(*res2.val);
+                REQUIRE(res1);
+                REQUIRE(res2);
+                REQUIRE(res1.unwrap());
+                REQUIRE(res2.unwrap());
             }
         }
         
         WHEN("I try to test a vector of non-3 dimension with the plane.") {
             
             Vector<double> badVec {{1,2,3,4}};
-            auto res1 {isNormalToPlane(p1, badVec)};
+            auto res1 {is_normal_to_plane(p1, badVec)};
             
             THEN("I should get an error.") {
                 
-                REQUIRE(OperationType::ERR == res1.type);
-                REQUIRE(ErrorCode::INCOMPATIBLE_VECTORS == *res1.error);
-                REQUIRE(
-                    std::string(
-                        "Only 3 dimenstional vectors can be checked for normalcy with a plane."
-                    ).compare(*res1.message) == 0
-                );
+                REQUIRE(!res1);
+                REQUIRE(ErrorCode::INCOMPATIBLE_VECTORS == res1.error());
             }
         }
     }
@@ -185,10 +159,10 @@ SCENARIO("Testing cross products.") {
 
             THEN("The result should be the expected vector.") {
 
-                REQUIRE(3 == (*result.val).size());
-                REQUIRE(-42.0 == (*result.val)[0]);
-                REQUIRE(26.0 == (*result.val)[1]);
-                REQUIRE(-14.0 == (*result.val)[2]);
+                REQUIRE(3 == (result.unwrap()).size());
+                REQUIRE(-42.0 == result.unwrap()[0]);
+                REQUIRE(26.0 == result.unwrap()[1]);
+                REQUIRE(-14.0 == result.unwrap()[2]);
             }
         }
     }
@@ -206,14 +180,12 @@ SCENARIO("Test linear independence of a set of vectors.") {
         WHEN("I test linear independence of 4 of them.") {
             
             std::vector<std::reference_wrapper<Vector<double>>> input {v1, v2, v3, v4};
-            Result<bool, ErrorCode> res {linearIndependenceOfSystem(input)};
+            Result<bool, ErrorCode> res {linear_independence_of_system(input)};
             
             THEN("The result should be false.") {
                 
-                REQUIRE(OperationType::OK == res.type);
-                REQUIRE(!*res.val);
-                REQUIRE(std::nullopt == res.error);
-                REQUIRE(std::nullopt == res.message);
+                REQUIRE(res);
+                REQUIRE(!res.unwrap());
             }
             
         }
@@ -221,14 +193,12 @@ SCENARIO("Test linear independence of a set of vectors.") {
         WHEN("I test linear independence of 3 independent ones.") {
             
             std::vector<std::reference_wrapper<Vector<double>>> input {v1, v2, v3};
-            Result<bool, ErrorCode> res {linearIndependenceOfSystem(input)};
+            Result<bool, ErrorCode> res {linear_independence_of_system(input)};
             
             THEN("The result should be true.") {
                 
-                REQUIRE(OperationType::OK == res.type);
-                REQUIRE(*res.val);
-                REQUIRE(std::nullopt == res.error);
-                REQUIRE(std::nullopt == res.message);
+                REQUIRE(res);
+                REQUIRE(res.unwrap());
             }
         }
         
@@ -236,60 +206,48 @@ SCENARIO("Test linear independence of a set of vectors.") {
         WHEN("I test linear independence of 3 non-independent ones.") {
             
             std::vector<std::reference_wrapper<Vector<double>>> input {v1, v2, v4};
-            Result<bool, ErrorCode> res {linearIndependenceOfSystem(input)};
+            Result<bool, ErrorCode> res {linear_independence_of_system(input)};
             
             THEN("The result should be false.") {
                 
-                REQUIRE(OperationType::OK == res.type);
-                REQUIRE(!*res.val);
-                REQUIRE(std::nullopt == res.error);
-                REQUIRE(std::nullopt == res.message);
+                REQUIRE(res);
+                REQUIRE_FALSE(res.unwrap());
             }
         }
         
         WHEN("I test linear independence of 2 independent ones.") {
             
             std::vector<std::reference_wrapper<Vector<double>>> input {v1, v2};
-            Result<bool, ErrorCode> res {linearIndependenceOfSystem(input)};
+            Result<bool, ErrorCode> res {linear_independence_of_system(input)};
             
             THEN("The result should be true.") {
                 
-                REQUIRE(OperationType::OK == res.type);
-                REQUIRE(*res.val);
-                REQUIRE(std::nullopt == res.error);
-                REQUIRE(std::nullopt == res.message);
+                REQUIRE(res);
+                REQUIRE(res.unwrap());
             }
         }
         
         WHEN("I test linear independence of 2 non-independent ones.") {
             
             std::vector<std::reference_wrapper<Vector<double>>> input {v1, v4};
-            Result<bool, ErrorCode> res {linearIndependenceOfSystem(input)};
+            Result<bool, ErrorCode> res {linear_independence_of_system(input)};
             
             THEN("The result should be false.") {
                 
-                REQUIRE(OperationType::OK == res.type);
-                REQUIRE(!*res.val);
-                REQUIRE(std::nullopt == res.error);
-                REQUIRE(std::nullopt == res.message);
+                REQUIRE(res);
+                REQUIRE_FALSE(res.unwrap());
             }
         }
         
         WHEN("I test linear independence of 2 just one.") {
             
             std::vector<std::reference_wrapper<Vector<double>>> input {v1};
-            Result<bool, ErrorCode> res {linearIndependenceOfSystem(input)};
+            Result<bool, ErrorCode> res {linear_independence_of_system(input)};
             
             THEN("The result should be an error.") {
                 
-                REQUIRE(OperationType::ERR == res.type);
-                REQUIRE(std::nullopt == res.val);
-                REQUIRE(ErrorCode::UNDERDETERMINED_SYSTEM == *res.error);
-                REQUIRE(
-                    std::string(
-                        "You cannot determine linear independence of only 1 vector unless you are high."
-                    ).compare(*res.message) == 0
-                );
+                REQUIRE_FALSE(res);
+                REQUIRE(ErrorCode::UNDERDETERMINED_SYSTEM == res.error());
             }
         }
         
@@ -297,18 +255,12 @@ SCENARIO("Test linear independence of a set of vectors.") {
             
             Vector<double> incorrect {{1,2,3,4}};
             std::vector<std::reference_wrapper<Vector<double>>> input {v1, incorrect};
-            Result<bool, ErrorCode> res {linearIndependenceOfSystem(input)};
+            Result<bool, ErrorCode> res {linear_independence_of_system(input)};
             
             THEN("The result should be an error.") {
                 
-                REQUIRE(OperationType::ERR == res.type);
-                REQUIRE(std::nullopt == res.val);
-                REQUIRE(ErrorCode::INCOMPATIBLE_VECTORS == *res.error);
-                REQUIRE(
-                    std::string(
-                        "Cannot compare linear independence of vectors of unequal dimensions."
-                    ).compare(*res.message) == 0
-                );
+                REQUIRE_FALSE(res);
+                REQUIRE(ErrorCode::INCOMPATIBLE_VECTORS == res.error());
             }
         }
     }

@@ -8,18 +8,20 @@
 
 #include <numeric/types/models.hpp>
 
+#include <thesoup/types/types.hpp>
+
 /**
- * \namespace Sigabrt
+ * \namespace numeric
  * 
  * \brief The root namespace.
  * */
-namespace Sigabrt {
+namespace numeric {
     /**
-     * \namespace Sigabrt::Benchmark
+     * \namespace numeric::benchmark
      * 
      * \brief Sub namespace with all numeric classes and functions.
      * */
-    namespace Benchmark {
+    namespace benchmark {
         
         /**
          * \class Benchmark
@@ -49,15 +51,15 @@ namespace Sigabrt {
          * */
         template <typename Input, typename Output, typename It> class Benchmark {
             static_assert(
-                Sigabrt::Types::IsForwardIteratorOfType<It, Sigabrt::Types::RunInfo>::value,
+                thesoup::types::IsForwardIteratorOfType<It, numeric::types::RunInfo>::value,
                 "The inputs argument has to be a forward iterator of type RunInfo."
             );
         private:
-            std::function<Input(const unsigned long&)> inputGen;
+            std::function<Input(const unsigned long&)> input_gen;
             std::function<Output(Input)> dut;
             It start;
             It end;
-            std::map<unsigned long, Sigabrt::Types::RunInfo> runTimes {};
+            std::map<unsigned long, numeric::types::RunInfo> run_times {};
         
         public:
             /**
@@ -65,7 +67,7 @@ namespace Sigabrt {
              * 
              * Constructs a benchmark object.
              * 
-             * \param inputGen (std::function) The input generator as explained before.
+             * \param input_gen (std::function) The input generator as explained before.
              * 
              * \param dut (std::function) The function under test.
              * 
@@ -74,11 +76,11 @@ namespace Sigabrt {
              * \param end (forward_iterator) end iterator of input ranges.
              * */
             Benchmark(
-                const std::function<Input(const unsigned long&)>& inputGen,
+                const std::function<Input(const unsigned long&)>& input_gen,
                 const std::function<Output(Input)>& dut,
                 const It& start,
                 const It& end
-            ) : inputGen {inputGen}, dut {dut}, start {start}, end {end} {}
+            ) : input_gen {input_gen}, dut {dut}, start {start}, end {end} {}
 
             
             /**
@@ -92,10 +94,10 @@ namespace Sigabrt {
             const Benchmark<Input, Output, It>& run() {
                 // Run through input sizes.
                 for (auto it = start; it < end; it++) {
-                    Sigabrt::Types::RunInfo run {*it};
+                    numeric::types::RunInfo run {*it};
                     
-                    auto input1 {inputGen(run.inputSize)};
-                    auto input2 {inputGen(run.inputSize)};
+                    auto input1 {input_gen(run.inputSize)};
+                    auto input2 {input_gen(run.inputSize)};
                     
                     // Run all iterations for that input size.
                     auto startTime {std::chrono::high_resolution_clock::now()};
@@ -108,7 +110,7 @@ namespace Sigabrt {
                     auto end {std::chrono::time_point_cast<std::chrono::microseconds>(endTime).time_since_epoch()};
                     
                     run.runTimeInMillis = static_cast<double>((end - start).count())/static_cast<double>(run.iterations);
-                    runTimes[run.inputSize] = run;
+                    run_times[run.inputSize] = run;
                 }
                 return *this;
             }
@@ -120,12 +122,8 @@ namespace Sigabrt {
              * 
              * \return (const& `std::map<unsigned long, RunInfo>`) The map with the results
              * */
-            const std::map<unsigned long, Sigabrt::Types::RunInfo>& getRunInfos() const {
-                return runTimes;
-            }
-            
-            const std::map<unsigned long, Sigabrt::Types::RunInfo>& getRunInfos() {
-                return runTimes;
+            const std::map<unsigned long, numeric::types::RunInfo>& get_run_infos() const {
+                return run_times;
             }
         };
     }

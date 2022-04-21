@@ -8,7 +8,7 @@
 #include <catch2/catch.hpp>
 #include <numeric/types/vector.hpp>
 
-using Sigabrt::Types::Vector;
+using numeric::types::Vector;
 
 SCENARIO("Vector instantiation.") {
     

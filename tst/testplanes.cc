@@ -13,9 +13,9 @@
 #include <numeric/types/plane.hpp>
 #include <numeric/math/vectorspaces.hpp>
 
-using Sigabrt::Types::Plane;
-using Sigabrt::Types::Vector;
-using Sigabrt::Numeric::cosineAngle;
+using numeric::types::Plane;
+using numeric::types::Vector;
+using numeric::functions::cosine_angle;
 
 SCENARIO("Plane creation from coefficients.") {
     
@@ -34,12 +34,12 @@ SCENARIO("Plane creation from coefficients.") {
                 
                 Vector<double> expectedNorm {{3,5,9}};
                 
-                const Vector<double>& actualNorm {p1.getNormal()};
-                const Vector<double>& point {p1.getPoint()};
+                const Vector<double>& actualNorm {p1.get_normal()};
+                const Vector<double>& point {p1.get_point()};
                 
-                REQUIRE(1.0 == *cosineAngle(expectedNorm, actualNorm).val);
+                REQUIRE(1.0 == cosine_angle(expectedNorm, actualNorm).unwrap());
                 REQUIRE(k == a*point[0] + b*point[1] + c*point[2]);
-                REQUIRE(std::make_tuple(a,b,c,k) == p1.getCoefficients());
+                REQUIRE(std::make_tuple(a,b,c,k) == p1.get_coefficients());
                 
             }
         }
@@ -69,11 +69,11 @@ SCENARIO("Plane creation from normal and point.") {
                 
                 Vector<double> expectedNorm {{-4,-3,9}};
                 
-                const Vector<double>& actualNorm {p1.getNormal()};
-                const Vector<double>& point {p1.getPoint()};
-                auto [a,b,c,k] = p1.getCoefficients();
+                const Vector<double>& actualNorm {p1.get_normal()};
+                const Vector<double>& point {p1.get_point()};
+                auto [a,b,c,k] = p1.get_coefficients();
                 
-                REQUIRE(1.0 == *cosineAngle(expectedNorm, actualNorm).val);
+                REQUIRE(1.0 == cosine_angle(expectedNorm, actualNorm).unwrap());
                 
                 REQUIRE(k == a*point[0] + b*point[1] + c*point[2]);
             }

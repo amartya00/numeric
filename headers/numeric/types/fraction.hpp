@@ -6,20 +6,20 @@
 #include <type_traits>
 
 /**
- * \namespace Sigabrt
+ * \namespace numeric
  * 
  * \brief The root namespace.
  * */
-namespace Sigabrt {
+namespace numeric {
     
     /**
-     * \namespace Sigabrt::Types
+     * \namespace sigabrt::types
      * 
      * \brief The namespace containing some special types.
      * */
-    namespace Types {
+    namespace types {
         namespace {
-            long validateInputsAndReduce(const long& num, const long& den) {
+            long validate_inputs_and_reduce(long num, long den) {
                 if (den == 0) {
                     throw std::invalid_argument("Denominator cannot be 0.");
                 }
@@ -68,7 +68,7 @@ namespace Sigabrt {
          * */
         struct Fraction {
         private:
-            Fraction(const long& _gcd, const long& num, const long& den): num {num/_gcd}, den {den/_gcd} {}
+            Fraction(long _gcd, long num, long den): num {num/_gcd}, den {den/_gcd} {}
         public:
             long num;
             long den;
@@ -85,7 +85,7 @@ namespace Sigabrt {
              * 
              * \exception std::invalid_argument thrown when the denominator is specified as 0.
              * */
-            Fraction(const long& num, const long& den): Fraction(validateInputsAndReduce(num, den), num, den) {}                
+            Fraction(long num, long den): Fraction(validate_inputs_and_reduce(num, den), num, den) {}
 
              /**
              * \brief Default constructor
@@ -177,7 +177,7 @@ namespace Sigabrt {
         
         
         // Override Multiply operator
-        template <typename T> Fraction operator*(const Fraction& lhs, const T& rhs) {
+        template <typename T> Fraction operator*(const Fraction& lhs, T rhs) {
             static_assert(std::is_integral<T>::value, "Addition operation is supported only on fraction and integral types.");
             if (lhs.den == 0L) {
                 throw std::invalid_argument("Multiplication with invalid fraction (0 denominator).");
@@ -188,7 +188,7 @@ namespace Sigabrt {
             };
         }
         
-        template <typename T> Fraction operator*( const T& lhs, const Fraction& rhs) {
+        template <typename T> Fraction operator*(T lhs, const Fraction& rhs) {
             static_assert(std::is_integral<T>::value, "Addition operation is supported only on fraction and integral types.");
             if (rhs.den == 0L) {
                 throw std::invalid_argument("Multiplication with invalid fraction (0 denominator).");
